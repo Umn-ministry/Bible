@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>தேடல் | Tamil Bible Reader</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-bar">
+        <div class="app-bar-container">
+            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h1 class="app-title">வேத ஆராய்ச்சித் தேடல்</h1>
+            <div style="width:40px;"></div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        
+        <div class="search-input-wrapper">
+            <span class="material-icons-round" style="color: var(--primary);">search</span>
+            <input type="text" id="globalSearchInput" placeholder="தேட வேண்டிய வார்த்தையை உள்ளிடவும் (எ.கா: இயேசு, அன்பு)..." autocomplete="off" autofocus>
+            <button id="clearQueryBtn" class="btn-icon" style="display:none;"><span class="material-icons-round">clear</span></button>
+        </div>
+
+        <div id="searchMetaSummary" class="empty-text" style="margin-bottom: 12px; padding: 0 4px;"></div>
+
+        <section id="searchResultsContainer">
+            <div class="card" style="text-align: center; padding: 32px 16px;">
+                <span class="material-icons-round" style="font-size: 48px; color: var(--on-surface-muted); margin-bottom: 8px;">manage_search</span>
+                <p class="empty-text">ஆரம்பிக்க வார்த்தைகளை தட்டச்சு செய்யவும். அனைத்து 66 புத்தகங்களிலும் தேடப்படும்.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="material-icons-round">home</span>
+            <span class="nav-label">முகப்பு</span>
+        </a>
+        <a href="search.html" class="nav-item active">
+            <span class="material-icons-round">search</span>
+            <span class="nav-label">தேடல்</span>
+        </a>
+        <a href="favorites.html" class="nav-item">
+            <span class="material-icons-round">bookmark</span>
+            <span class="nav-label">சேமித்தவை</span>
+        </a>
+        <a href="about.html" class="nav-item">
+            <span class="material-icons-round">info</span>
+            <span class="nav-label">செயலி</span>
+        </a>
+    </nav>
+
+    <script src="books.js"></script>
+    <script src="settings.js"></script>
+    <script>
+        let searchTimeoutStore = null;
+        // Optimization: Prefetch target array matrix maps mapping structures pointers directly
+        const searchScopeConfigurationMap = bibleBooksData;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            
+            const input = document.getElementById('globalSearchInput');
+            const clearBtn = document.getElementById('clearQueryBtn');
+            
+            input.addEventListener('input', () => {
+                if(input.value.trim().length > 0) {
+                    clearBtn.style.display = 'inline-flex';
+                } else {
+                    clearBtn.style.display = 'none';
+                }
+                
+                // Debouncing Optimization Mechanism Engine Layout Configurations Controls
+                clearTimeout(searchTimeoutStore);
+                searchTimeoutStore = setTimeout(() => {
+                    executeGlobalSearchPipeline(input.value.trim());
+                }, 400);
+            });
+
+            clearBtn.addEventListener('click', () => {
+                input.value = '';
+                clearBtn.style.display = 'none';
+                document.getElementById('searchMetaSummary').innerText = '';
+                resetSearchPlaceholderMessage();
+                input.focus();
+            });
+        });
+
+        function resetSearchPlaceholderMessage() {
+            document.getElementById('searchResultsContainer').innerHTML = `
+                <div class="card" style="text-align: center; padding: 32px 16px;">
+                    <span class="material-icons-round" style="font-size: 48px; color: var(--on-surface-muted); margin-bottom: 8px;">manage_search</span>
+                    <p class="empty-text">ஆரம்பிக்க வார்த்தைகளை தட்டச்சு செய்யவும். அனைத்து 66 புத்தகங்களிலும் தேடப்படும்.</p>
+                </div>`;
+        }
+
+        async function executeGlobalSearchPipeline(query) {
+            const container = document.getElementById('searchResultsContainer');
+            const summary = document.getElementById('searchMetaSummary');
+            
+            if(!query || query.length < 2) {
+                if(query.length === 1) {
+                    summary.innerText = 'குறைந்தது 2 எழுத்துக்கள் தேவை...';
+                } else {
+                    summary.innerText = '';
+                    resetSearchPlaceholderMessage();
+                }
+                return;
+            }
+
+            container.innerHTML = `
+                <div style="text-align:center; padding: 24px;">
+                    <p class="empty-text">தேடப்படுகிறது... தயவுசெய்து காத்திருக்கவும்...</p>
+                </div>`;
+            summary.innerText = '';
+
+            let matchesCount = 0;
+            const resultsBufferFragment = document.createDocumentFragment();
+            const regexMatcher = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+
+            // Sequential High-Speed Multi-file Processing Iterations Engine Loop Track
+            for(const book of searchScopeConfigurationMap) {
+                try {
+                    const response = await fetch(`books/${book.id}.json`);
+                    if(!response.ok) continue;
+                    const data = await response.json();
+                    
+                    // Direct Traversal Path Implementation Framework Schema Compliance Engine rule
+                    const chapters = data.Book[0].Chapter;
+                    
+                    chapters.forEach((chapObj, cIdx) => {
+                        const chapNum = cIdx + 1;
+                        const verses = chapObj.Verse;
+                        
+                        verses.forEach((vObj) => {
+                            if(vObj.Verse.includes(query)) {
+                                matchesCount++;
+                                
+                                const card = document.createElement('div');
+                                card.className = 'search-result-item';
+                                card.onclick = () => {
+                                    location.href = `chapter.html?book=${encodeURIComponent(book.id)}&chapter=${chapNum}#v-${vObj.Verseid || vObj.Verseid === 0 ? parseInt(vObj.Verseid.toString().slice(-3)) : 1}`;
+                                };
+
+                                // Apply highlighted mark markup injection wrappers safely syntax engine
+                                const structuralMarkedContentString = vObj.Verse.replace(regexMatcher, '<mark>$1</mark>');
+                                const calculatedDisplayVerseNumber = vObj.Verseid ? parseInt(vObj.Verseid.toString().slice(-3)) : '';
+
+                                card.innerHTML = `
+                                    <div class="search-result-ref">${book.ta} ${chapNum}:${calculatedDisplayVerseNumber}</div>
+                                    <div style="font-size:0.95rem; line-height:1.5;">${structuralMarkedContentString}</div>
+                                `;
+                                resultsBufferFragment.appendChild(card);
+                            }
+                        });
+                    });
+                } catch(e) {
+                    // Fail silently over missing individual books configurations tables map files components safely
+                }
+            }
+
+            container.innerHTML = '';
+            if(matchesCount > 0) {
+                summary.innerText = `மொத்தம் ${matchesCount} முடிவுகள் கண்டறியப்பட்டன.`;
+                container.appendChild(resultsBufferFragment);
+            } else {
+                summary.innerText = 'முடிவுகள் எதுவும் இல்லை.';
+                container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 32px 16px;">
+                        <span class="material-icons-round" style="font-size: 48px; color: #d93025; margin-bottom: 8px;">error_outline</span>
+                        <p class="empty-text">"${query}" என்ற வார்த்தைக்கான முடிவுகள் எதுவும் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.</p>
+                    </div>`;
+            }
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+    </script>
+</body>
+</html>
