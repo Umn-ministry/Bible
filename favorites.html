@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>சேமித்தவை | Tamil Bible Reader</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-bar">
+        <div class="app-bar-container">
+            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h1 class="app-title">சேமித்த வசனங்கள்</h1>
+            <button id="exportFavsBtn" class="btn-icon" title="வசனங்களை ஏற்றுமதி செய்">
+                <span class="material-icons-round">share_windows</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        
+        <div class="tabs-container">
+            <button id="favTabVerses" class="tab-btn active" onclick="switchFavTab('verses')">வசனங்கள்</button>
+            <button id="favTabBooks" class="tab-btn" onclick="switchFavTab('books')">புத்தகங்கள்</button>
+        </div>
+
+        <section id="favoritesDisplayContainer">
+            <p class="empty-text">சேமிக்கப்பட்ட தரவுகள் ஏற்றப்படுகிறது...</p>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="material-icons-round">home</span>
+            <span class="nav-label">முகப்பு</span>
+        </a>
+        <a href="search.html" class="nav-item">
+            <span class="material-icons-round">search</span>
+            <span class="nav-label">தேடல்</span>
+        </a>
+        <a href="favorites.html" class="nav-item active">
+            <span class="material-icons-round">bookmark</span>
+            <span class="nav-label">சேமித்தவை</span>
+        </a>
+        <a href="about.html" class="nav-item">
+            <span class="material-icons-round">info</span>
+            <span class="nav-label">செயலி</span>
+        </a>
+    </nav>
+
+    <script src="books.js"></script>
+    <script src="settings.js"></script>
+    <script>
+        let currentFavActiveTabState = 'verses';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderFavoritesContextView();
+            
+            document.getElementById('exportFavsBtn').onclick = () => {
+                exportFavoritesDataContentPipeline();
+            };
+        });
+
+        function switchFavTab(targetState) {
+            currentFavActiveTabState = targetState;
+            document.getElementById('favTabVerses').classList.toggle('active', targetState === 'verses');
+            document.getElementById('favTabBooks').classList.toggle('active', targetState === 'books');
+            renderFavoritesContextView();
+        }
+
+        function renderFavoritesContextView() {
+            const container = document.getElementById('favoritesDisplayContainer');
+            container.innerHTML = '';
+
+            if (currentFavActiveTabState === 'verses') {
+                const favVerses = JSON.parse(localStorage.getItem('tb_fav_verses')) || [];
+                
+                if (favVerses.length === 0) {
+                    container.innerHTML = `
+                        <div class="card" style="text-align:center; padding:32px 16px;">
+                            <span class="material-icons-round" style="font-size:48px; color:var(--on-surface-muted); margin-bottom:8px;">bookmark_border</span>
+                            <p class="empty-text">நீங்கள் இன்னும் எந்தவொரு வசனத்தையும் சேமிக்கவில்லை.</p>
+                        </div>`;
+                    return;
+                }
+
+                favVerses.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.style.position = 'relative';
+                    card.innerHTML = `
+                        <div class="search-result-ref" style="cursor:pointer;" onclick="location.href='chapter.html?book=${encodeURIComponent(item.bookId)}&chapter=${item.chapter}'">${item.bookTa} ${item.chapter}:${item.verse}</div>
+                        <p style="font-size:1rem; margin-bottom:8px; padding-right:40px;">${item.text}</p>
+                        <button class="btn-icon" style="position:absolute; top:8px; right:8px; color:#d93025;" onclick="deleteFavoriteVerseByKey('${item.key}')" title="நீக்கு">
+                            <span class="material-icons-round">delete_outline</span>
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } else {
+                const favBooks = JSON.parse(localStorage.getItem('tb_fav_books')) || [];
+                
+                if (favBooks.length === 0) {
+                    container.innerHTML = `
+                        <div class="card" style="text-align:center; padding:32px 16px;">
+                            <span class="material-icons-round" style="font-size:48px; color:var(--on-surface-muted); margin-bottom:8px;">library_books</span>
+                            <p class="empty-text">நீங்கள் இன்னும் எந்தவொரு புத்தகத்தையும் சேமிக்கவில்லை.</p>
+                        </div>`;
+                    return;
+                }
+
+                const grid = document.createElement('div');
+                grid.className = 'books-grid';
+                
+                favBooks.forEach(id => {
+                    const bObj = bibleBooksData.find(b => b.id === id);
+                    if(!bObj) return;
+
+                    const bCard = document.createElement('div');
+                    bCard.className = 'book-card';
+                    bCard.style.position = 'relative';
+                    bCard.innerHTML = `
+                        <div onclick="location.href='reader.html?book=${encodeURIComponent(bObj.id)}'" style="cursor:pointer; width:100%; height:100%;">
+                            <div class="book-name-ta">${bObj.ta}</div>
+                            <div class="book-name-en">${bObj.en}</div>
+                        </div>
+                        <span class="material-icons-round" style="position:absolute; bottom:6px; right:6px; color:#d93025; cursor:pointer; font-size:18px;" onclick="removeFavoriteBookById('${id}')">delete</span>
+                    `;
+                    grid.appendChild(bCard);
+                });
+                container.appendChild(grid);
+            }
+        }
+
+        function deleteFavoriteVerseByKey(key) {
+            let favVerses = JSON.parse(localStorage.getItem('tb_fav_verses')) || [];
+            favVerses = favVerses.filter(f => f.key !== key);
+            localStorage.setItem('tb_fav_verses', JSON.stringify(favVerses));
+            renderFavoritesContextView();
+        }
+
+        function removeFavoriteBookById(id) {
+            let favBooks = JSON.parse(localStorage.getItem('tb_fav_books')) || [];
+            favBooks = favBooks.filter(bId => bId !== id);
+            localStorage.setItem('tb_fav_books', JSON.stringify(favBooks));
+            renderFavoritesContextView();
+        }
+
+        function exportFavoritesDataContentPipeline() {
+            const favVerses = JSON.parse(localStorage.getItem('tb_fav_verses')) || [];
+            if(favVerses.length === 0) {
+                alert('ஏற்றுமதி செய்ய சேமித்த வசனங்கள் எதுவும் இல்லை!');
+                return;
+            }
+
+            const outputRawTextPayload = favVerses.map(f => `${f.bookTa} ${f.chapter}:${f.verse}\n"${f.text}"`).join('\n\n---\n\n');
+            
+            if(navigator.share) {
+                navigator.share({
+                    title: 'எனது சேமித்த பைபிள் வசனங்கள்',
+                    text: outputRawTextPayload
+                });
+            } else {
+                // Fallback implementation: Copy systematically directly into context clipboard memory spaces array line matching
+                navigator.clipboard.writeText(outputRawTextPayload);
+                alert('அனைத்து வசனங்களும் நகலெடுக்கப்பட்டன! நீங்கள் அவற்றை எங்கு வேண்டுமானாலும் பகிர்ந்து கொள்ளலாம்.');
+            }
+        }
+    </script>
+</body>
+</html>
