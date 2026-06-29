@@ -1,0 +1,24 @@
+{
+  "short_name": "பைபிள்",
+  "name": "தமிழ் பைபிள் ரீடர் - Tamil Bible Reader",
+  "description": "அனைத்து 66 புத்தகங்களையும் எளிதாக வாசிக்க, தேட மற்றும் தியானிக்க ஒரு நவீன தமிழ் பைபிள் செயலி.",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#121212",
+  "theme_color": "#1a73e8",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "categories": ["books", "education"]
+}
