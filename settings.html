@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>அமைப்புகள் | Tamil Bible Reader</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-bar">
+        <div class="app-bar-container">
+            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h1 class="app-title">பயன்பாட்டு அமைப்புகள்</h1>
+            <div style="width:40px;"></div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        
+        <section class="card">
+            <div class="settings-group">
+                <div class="settings-label">காட்சித் தோற்றம் (Theme)</div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>தீம் தேர்வு</h4>
+                        <p>பயன்பாட்டின் பின்னணி வண்ணத்தை மாற்றவும்</p>
+                    </div>
+                    <select id="settingThemeSelect" onchange="processSettingsChange()">
+                        <option value="system">கணினி அமைப்பு (System)</option>
+                        <option value="light">பகல் பொழுது (Light)</option>
+                        <option value="dark">இரவுப் பொழுது (Dark)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-label">எழுத்துரு வடிவமைப்பு (Typography)</div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>எழுத்தின் அளவு</h4>
+                        <p>வசனங்கள் வாசிப்பதற்கான அளவு</p>
+                    </div>
+                    <select id="settingSizeSelect" onchange="processSettingsChange()">
+                        <option value="14px">சிறியது</option>
+                        <option value="16px">சாதாரண அளவு</option>
+                        <option value="19px">பெரியது</option>
+                        <option value="22px">மிகப் பெரியது</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>தமிழ் எழுத்துரு பாணி</h4>
+                        <p>விருப்பமான தமிழ் விசை எழுத்துரு பாணி</p>
+                    </div>
+                    <select id="settingFontSelect" onchange="processSettingsChange()">
+                        <option value="sans">நவீன வடிவம் (Sans-Serif)</option>
+                        <option value="serif">பாரம்பரிய வடிவம் (Serif)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="settings-label" style="color:#d93025;">தரவு மேலாண்மை (Data Management)</div>
+            <p class="empty-text" style="margin-bottom:12px;">பயன்பாட்டின் தற்காலிக சேமிப்புகள், வரலாறு மற்றும் குறிப்புகளை மீட்டமைக்கலாம்.</p>
+            <div class="flex-row-buttons">
+                <button class="btn-danger-outline" onclick="triggerFactoryResetPipeline()">அனைத்து அமைப்புகளையும் மீட்டமை</button>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="material-icons-round">home</span>
+            <span class="nav-label">முகப்பு</span>
+        </a>
+        <a href="search.html" class="nav-item">
+            <span class="material-icons-round">search</span>
+            <span class="nav-label">தேடல்</span>
+        </a>
+        <a href="favorites.html" class="nav-item">
+            <span class="material-icons-round">bookmark</span>
+            <span class="nav-label">சேமித்தவை</span>
+        </a>
+        <a href="about.html" class="nav-item">
+            <span class="material-icons-round">info</span>
+            <span class="nav-label">செயலி</span>
+        </a>
+    </nav>
+
+    <script src="settings.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            populateCurrentSettingsFormFields();
+        });
+
+        function populateCurrentSettingsFormFields() {
+            const currentConfigObj = JSON.parse(localStorage.getItem('tb_settings')) || {
+                theme: 'system',
+                fontSize: '16px',
+                fontFamily: 'sans'
+            };
+
+            document.getElementById('settingThemeSelect').value = currentConfigObj.theme;
+            document.getElementById('settingSizeSelect').value = currentConfigObj.fontSize;
+            document.getElementById('settingFontSelect').value = currentConfigObj.fontFamily;
+            
+            // Invoke live framework execution loop context state matching directly safely
+            applyThemeSettings(currentConfigObj.theme);
+            applyFontSettings(currentConfigObj.fontSize, currentConfigObj.fontFamily);
+        }
+
+        function processSettingsChange() {
+            const updatedConfigPayload = {
+                theme: document.getElementById('settingThemeSelect').value,
+                fontSize: document.getElementById('settingSizeSelect').value,
+                fontFamily: document.getElementById('settingFontSelect').value
+            };
+
+            localStorage.setItem('tb_settings', JSON.stringify(updatedConfigPayload));
+            
+            // Propagate visual styling configurations transformations live adjustments safely across target windows frames instances
+            applyThemeSettings(updatedConfigPayload.theme);
+            applyFontSettings(updatedConfigPayload.fontSize, updatedConfigPayload.fontFamily);
+        }
+
+        function triggerFactoryResetPipeline() {
+            if(confirm('உறுதியாக அனைத்து சேமிக்கப்பட்ட தரவுகள், வரலாறு மற்றும் அமைப்புகளையும் நீக்க வேண்டுமா? இந்தச் செயலை மாற்றியமைக்க முடியாது.')) {
+                localStorage.clear();
+                alert('பயன்பாடு வெற்றிகரமாக மீட்டமைக்கப்பட்டது!');
+                location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
