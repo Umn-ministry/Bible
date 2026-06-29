@@ -1,0 +1,657 @@
+/* ==========================================================================
+   Tamil Bible Reader - Core Styling Framework (Material Design 3 Inspired)
+   ========================================================================== */
+
+:root {
+    --primary: #1a73e8;
+    --primary-variant: #1557b0;
+    --background: #f8f9fa;
+    --surface: #ffffff;
+    --surface-variant: #f1f3f4;
+    --on-primary: #ffffff;
+    --on-background: #202124;
+    --on-surface: #3c4043;
+    --on-surface-muted: #5f6368;
+    --border: #dadce0;
+    --accent: #e8f0fe;
+    --on-accent: #1967d2;
+    --shadow: rgba(60, 64, 67, 0.15) 0px 1px 3px 1px, rgba(60, 64, 67, 0.3) 0px 1px 2px 0px;
+    --font-sans: 'Roboto', 'Latha', sans-serif;
+    --font-serif: 'Noto Serif Tamil', serif;
+    --font-current: var(--font-sans);
+    --font-size-base: 16px;
+    --nav-height: 64px;
+    
+    /* Highlight system colors */
+    --hl-yellow: #fff2cc;
+    --hl-green: #e2f0d9;
+    --hl-blue: #ddebf7;
+    --hl-pink: #fce4d6;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+    --primary: #8ab4f8;
+    --primary-variant: #669df6;
+    --background: #121212;
+    --surface: #1e1e1e;
+    --surface-variant: #2d2d2d;
+    --on-primary: #202124;
+    --on-background: #e8eaed;
+    --on-surface: #f1f3f4;
+    --on-surface-muted: #9aa0a6;
+    --border: #3c4043;
+    --accent: #2c3e50;
+    --on-accent: #8ab4f8;
+    --shadow: rgba(0, 0, 0, 0.5) 0px 4px 6px 0px;
+    
+    --hl-yellow: #4d4626;
+    --hl-green: #27442b;
+    --hl-blue: #1b365d;
+    --hl-pink: #522d2d;
+}
+
+/* Base Setup & Resets */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-current);
+    font-size: var(--font-size-base);
+    background-color: var(--background);
+    color: var(--on-background);
+    line-height: 1.6;
+    padding-bottom: calc(var(--nav-height) + 24px);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Header Application Bar */
+.app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--surface);
+    color: var(--on-background);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.app-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px;
+    height: 56px;
+}
+
+.app-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Buttons Styling Container */
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--on-surface);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--surface-variant);
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.btn-text:hover {
+    background-color: var(--accent);
+}
+
+.btn-primary-sm {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    text-decoration: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-block;
+    text-align: center;
+}
+
+/* Layout Containers */
+.main-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* Universal Card Layouts */
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+}
+
+.daily-verse-card {
+    border-left: 5px solid var(--primary);
+}
+
+.card-badge {
+    display: inline-block;
+    background-color: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.verse-text {
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.verse-reference {
+    font-size: 0.9rem;
+    color: var(--on-surface-muted);
+    font-weight: 700;
+    text-align: right;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+}
+
+/* Dashboard Status Metrics */
+.quick-status-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media(min-width: 600px) {
+    .quick-status-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.status-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-subtitle {
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--on-surface-muted);
+    margin-bottom: 8px;
+}
+
+.status-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.recent-list {
+    list-style: none;
+}
+
+.recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.9rem;
+}
+
+.recent-item a {
+    color: var(--on-background);
+    text-decoration: none;
+}
+
+.recent-item a:hover {
+    color: var(--primary);
+}
+
+.empty-text {
+    color: var(--on-surface-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Custom UI Elements */
+.inline-search-box {
+    background-color: var(--surface-variant);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--on-surface-muted);
+    cursor: pointer;
+    margin: 16px 0;
+}
+
+/* Tab Setup */
+.tabs-container {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--on-surface-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Books Directory Layout Mapping */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.book-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--on-background);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 90px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.book-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.book-name-ta {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.book-name-en {
+    font-size: 0.75rem;
+    color: var(--on-surface-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Floating Action Button Setup */
+.fab {
+    position: fixed;
+    bottom: calc(var(--nav-height) + 16px);
+    right: 16px;
+    background-color: var(--primary);
+    color: var(--on-primary);
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-decoration: none;
+    z-index: 90;
+}
+
+/* Navigation System Bottom Bar Layout */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--on-surface-muted);
+    font-size: 0.75rem;
+    width: 25%;
+    height: 100%;
+}
+
+.nav-item .material-icons-round {
+    font-size: 24px;
+    margin-bottom: 2px;
+    padding: 4px 16px;
+    border-radius: 16px;
+    transition: background-color 0.2s;
+}
+
+.nav-item:hover .material-icons-round,
+.nav-item.active .material-icons-round {
+    color: var(--primary);
+}
+
+.nav-item.active .material-icons-round {
+    background-color: var(--accent);
+}
+
+.nav-label {
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   Reader & Chapter Interface System Specs
+   ========================================================================== */
+.reader-header {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    position: sticky;
+    top: 56px;
+    z-index: 95;
+}
+
+.reader-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.reader-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.chapter-btn {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    color: var(--on-background);
+}
+
+.chapter-btn:hover {
+    border-color: var(--primary);
+    background-color: var(--accent);
+}
+
+/* Verses Viewer List Layout Structuring */
+.verses-container {
+    margin-top: 16px;
+}
+
+.verse-row {
+    padding: 12px 8px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.verse-row:hover {
+    background-color: var(--surface-variant);
+}
+
+.verse-num {
+    font-weight: 700;
+    color: var(--primary);
+    margin-right: 8px;
+    font-size: 0.85rem;
+    vertical-align: super;
+}
+
+/* Highlighting Engine Visual Classes */
+.hl-y { background-color: var(--hl-yellow) !important; }
+.hl-g { background-color: var(--hl-green) !important; }
+.hl-b { background-color: var(--hl-blue) !important; }
+.hl-p { background-color: var(--hl-pink) !important; }
+
+/* Contextual Selection Action Bar Modal */
+.action-modal {
+    position: fixed;
+    bottom: var(--nav-height);
+    left: 0;
+    right: 0;
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    z-index: 110;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.action-modal.show {
+    transform: translateY(0);
+}
+
+.modal-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.hl-palette {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.color-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.color-dot.active {
+    border-color: var(--on-background);
+}
+
+/* ==========================================================================
+   Search Engine Component CSS
+   ========================================================================== */
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 12px;
+    margin-bottom: 16px;
+}
+
+.search-input-wrapper input {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 10px;
+    font-size: 1rem;
+    color: var(--on-background);
+    outline: none;
+}
+
+.search-result-item {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.search-result-ref {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+mark {
+    background-color: var(--hl-yellow);
+    color: #000;
+    font-weight: 500;
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   Settings Panel Forms Configurations
+   ========================================================================== */
+.settings-group {
+    margin-bottom: 24px;
+}
+
+.settings-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-info h4 {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.setting-info p {
+    font-size: 0.85rem;
+    color: var(--on-surface-muted);
+}
+
+select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: var(--surface-variant);
+    color: var(--on-background);
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    outline: none;
+}
+
+/* Utility Layout Modifiers */
+.flex-row-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.btn-danger-outline {
+    background: none;
+    border: 1px solid #d93025;
+    color: #d93025;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-danger-outline:hover {
+    background-color: rgba(217, 48, 37, 0.05);
+}
