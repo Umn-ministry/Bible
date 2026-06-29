@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>அதிகாரங்கள் | Tamil Bible Reader</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-bar">
+        <div class="app-bar-container">
+            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h1 id="bookReaderTitle" class="app-title">புத்தகம்</h1>
+            <button id="favBookBtn" class="btn-icon" title="புத்தகத்தை சேமி">
+                <span class="material-icons-round">bookmark_border</span>
+            </button>
+        </div>
+    </header>
+
+    <div style="height: 4px; width: 100%; background-color: var(--surface-variant);">
+        <div id="readingProgressBar" style="height: 100%; width: 0%; background-color: var(--primary); transition: width 0.3s;"></div>
+    </div>
+
+    <main class="main-container">
+        
+        <div class="card">
+            <div class="reader-nav-row">
+                <button id="prevBookBtn" class="btn-text"><span class="material-icons-round">chevron_left</span> முந்தைய</button>
+                <span class="reader-title">அதிகாரத்தைத் தேர்வுசெய்க</span>
+                <button id="nextBookBtn" class="btn-text">அடுத்தது <span class="material-icons-round">chevron_right</span></button>
+            </div>
+        </div>
+
+        <section class="card">
+            <div id="chaptersGrid" class="chapters-grid">
+                </div>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="material-icons-round">home</span>
+            <span class="nav-label">முகப்பு</span>
+        </a>
+        <a href="search.html" class="nav-item">
+            <span class="material-icons-round">search</span>
+            <span class="nav-label">தேடல்</span>
+        </a>
+        <a href="favorites.html" class="nav-item">
+            <span class="material-icons-round">bookmark</span>
+            <span class="nav-label">சேமித்தவை</span>
+        </a>
+        <a href="about.html" class="nav-item">
+            <span class="material-icons-round">info</span>
+            <span class="nav-label">செயலி</span>
+        </a>
+    </nav>
+
+    <script src="books.js"></script>
+    <script src="settings.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme(); // Located inside settings configuration tracker system
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('book') || 'Genesis';
+            
+            const bookIndex = bibleBooksData.findIndex(b => b.id === bookId);
+            if(bookIndex === -1) return;
+            
+            const currentBook = bibleBooksData[bookIndex];
+            
+            // Set Titles Texts Definitions
+            document.getElementById('bookReaderTitle').innerText = currentBook.ta;
+            
+            // Draw Target Interface Map Matrix System Elements Blocks
+            const grid = document.getElementById('chaptersGrid');
+            for(let c = 1; c <= currentBook.chapters; c++) {
+                const btn = document.createElement('button');
+                btn.className = 'chapter-btn';
+                btn.innerText = c;
+                btn.onclick = () => {
+                    location.href = `chapter.html?book=${encodeURIComponent(bookId)}&chapter=${c}`;
+                };
+                grid.appendChild(btn);
+            }
+            
+            // Compute Context Progress Metric Setup Parameters UI indicators structures logic
+            const progress = ((bookIndex + 1) / bibleBooksData.length) * 100;
+            document.getElementById('readingProgressBar').style.width = `${progress}%`;
+            
+            // Process Navigation Rules Pipelines Bindings Buttons Targets
+            const prevBtn = document.getElementById('prevBookBtn');
+            const nextBtn = document.getElementById('nextBookBtn');
+            
+            if(bookIndex > 0) {
+                prevBtn.onclick = () => location.href = `reader.html?book=${encodeURIComponent(bibleBooksData[bookIndex-1].id)}`;
+            } else {
+                prevBtn.style.visibility = 'hidden';
+            }
+            
+            if(bookIndex < bibleBooksData.length - 1) {
+                nextBtn.onclick = () => location.href = `reader.html?book=${encodeURIComponent(bibleBooksData[bookIndex+1].id)}`;
+            } else {
+                nextBtn.style.visibility = 'hidden';
+            }
+            
+            // Handle Favoriting System Features Configurations Hooks LocalStorage Matrix Trackers
+            const favBtn = document.getElementById('favBookBtn');
+            let savedBooks = JSON.parse(localStorage.getItem('tb_fav_books')) || [];
+            
+            if(savedBooks.includes(bookId)) {
+                favBtn.querySelector('.material-icons-round').innerText = 'bookmark';
+                favBtn.style.color = 'var(--primary)';
+            }
+            
+            favBtn.onclick = () => {
+                savedBooks = JSON.parse(localStorage.getItem('tb_fav_books')) || [];
+                if(savedBooks.includes(bookId)) {
+                    savedBooks = savedBooks.filter(id => id !== bookId);
+                    favBtn.querySelector('.material-icons-round').innerText = 'bookmark_border';
+                    favBtn.style.color = 'inherit';
+                } else {
+                    savedBooks.push(bookId);
+                    favBtn.querySelector('.material-icons-round').innerText = 'bookmark';
+                    favBtn.style.color = 'var(--primary)';
+                }
+                localStorage.setItem('tb_fav_books', JSON.stringify(savedBooks));
+            };
+        });
+    </script>
+</body>
+</html>
