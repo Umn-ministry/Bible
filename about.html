@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>செயலி பற்றி | Tamil Bible Reader</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-bar">
+        <div class="app-bar-container">
+            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h1 class="app-title">செயலித் தகவல்</h1>
+            <div style="width:40px;"></div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        
+        <section class="card" style="text-align: center; padding: 24px 16px;">
+            <div style="width: 80px; height: 80px; background-color: var(--accent); color: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; box-shadow: var(--shadow);">
+                <span class="material-icons-round" style="font-size: 48px;">auto_stories</span>
+            </div>
+            <h2 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 4px;">தமிழ் பைபிள் ரீடர்</h2>
+            <p class="empty-text" style="font-weight: 500; margin-bottom: 12px;">Tamil Bible Reader App</p>
+            <div class="card-badge">பதிப்பு 1.2.0 (Production Ready)</div>
+        </section>
+
+        <section class="card">
+            <div class="settings-label">அம்சங்கள் மற்றும் சிறப்புகள் (Key Features)</div>
+            <ul style="padding-left: 20px; margin-top: 8px; font-size: 0.95rem; line-height: 1.8;">
+                <li><b>முழுமையான ஆஃப்லைன் வசதி:</b> ஒருமுறை பதிவிறக்கிய பின் இணையம் இன்றியே முற்றிலும் இயங்கும் திறனுள்ளது.</li>
+                <li><b>நவீன தேடுபொறி:</b> அனைத்து 66 புத்தகங்களிலும் மிகக் குறுகிய நொடிகளில் தேடி முடிவுகளைத் தரும் அதிவேக அமைப்பு.</li>
+                <li><b>விருப்பப் பலகை:</b> வசனங்களை பல வண்ணங்களில் அடிக்கோடிட்டுத் தனிப்பயனாக்கும் வசதி (Highlight System Engine).</li>
+                <li><b>எளிதான பகிர்வு:</b> ஒற்றைத் தொடுதலில் வசனங்களை நகலெடுத்து வாட்ஸ்அப் அல்லது சமூக வலைத்தளங்களில் பகிரலாம்.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <div class="settings-label">தனியுரிமைக் கொள்கை (Privacy Policy)</div>
+            <p style="font-size: 0.9rem; color: var(--on-surface); line-height: 1.6; margin-top: 6px;">
+                இந்தத் தமிழ் பைபிள் செயலி பயனர்களின் எந்தவொரு தனிப்பட்ட தரவுகளையோ அல்லது இருப்பிடத் தகவல்களையோ சேகரிப்பதோ, சேமிப்பதோ அல்லது பிற நிறுவனங்களுடன் பகிர்வதோ இல்லை. உங்களின் அனைத்துச் சேமிப்புகள், வாசிப்பு வரலாறு மற்றும் தனிப்பயனாக்கப்பட்ட தேர்வுகள் முற்றிலும் உங்களது சொந்த சாதனத்தின் தற்காலிக நினைவகத்தில் (LocalStorage) மட்டுமே பாதுகாப்பாகச் சேமிக்கப்படும்.
+            </p>
+        </section>
+
+        <section class="card" style="background-color: var(--surface-variant); border-style: dashed; text-align: center;">
+            <p style="font-size:0.85rem; color: var(--on-surface-muted);">
+                வடிவமைப்பு மற்றும் உருவாக்கம்: <b>D. Babu</b><br>
+                வளர்ச்சித் திட்டக் குழுமம் &copy; 2026 அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.
+            </p>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="material-icons-round">home</span>
+            <span class="nav-label">முகப்பு</span>
+        </a>
+        <a href="search.html" class="nav-item">
+            <span class="material-icons-round">search</span>
+            <span class="nav-label">தேடல்</span>
+        </a>
+        <a href="favorites.html" class="nav-item">
+            <span class="material-icons-round">bookmark</span>
+            <span class="nav-label">சேமித்தவை</span>
+        </a>
+        <a href="about.html" class="nav-item active">
+            <span class="material-icons-round">info</span>
+            <span class="nav-label">செயலி</span>
+        </a>
+    </nav>
+
+    <script src="settings.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+        });
+    </script>
+</body>
+</html>
