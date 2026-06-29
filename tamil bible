@@ -1,0 +1,16 @@
+06.29 08:33
+TamilBible
+│
+├── index.html
+├── reader.html
+├── style.css
+├── app.js
+├── books/
+│     Genesis.json
+│     Exodus.json
+│     ...
+│     Revelation.json
+│
+└── images/
+
+
