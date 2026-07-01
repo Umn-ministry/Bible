@@ -552,106 +552,489 @@ body {
     display: flex;
     align-items: center;
     background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 4px 12px;
-    margin-bottom: 16px;
+/* ==========================================================================
+   01. DESIGN SYSTEM VARIABLES (MATERIAL DESIGN 3 SPECIFICATIONS)
+   ========================================================================== */
+:root {
+    /* Baseline Shared Layout Metrics */
+    --font-sans: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-serif-tamil: 'Noto Serif Tamil', Georgia, Cambria, serif;
+    --top-bar-height: 64px;
+    --bottom-nav-height: 80px;
+    --drawer-width: 280px;
+    --radius-small: 8px;
+    --radius-medium: 12px;
+    --radius-large: 16px;
+    --radius-full: 100px;
+    --transition-standard: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    
+    /* Light Theme Palette Tokens */
+    --background: #FEF7FF;
+    --on-background: #1D1B20;
+    --surface: #F7F2FA;
+    --on-surface: #1D1B20;
+    --surface-variant: #E7E0EC;
+    --on-surface-variant: #49454F;
+    --primary: #6750A4;
+    --on-primary: #FFFFFF;
+    --primary-container: #EADDFF;
+    --on-primary-container: #21005D;
+    --secondary: #625B71;
+    --on-secondary: #FFFFFF;
+    --secondary-container: #E8DEF8;
+    --on-secondary-container: #1D192B;
+    --error: #B3261E;
+    --on-error: #FFFFFF;
+    --error-container: #F9DEDC;
+    --on-error-container: #410E0B;
+    --outline: #79747E;
+    --elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    --elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
 }
 
-.search-input-wrapper input {
-    flex: 1;
-    border: none;
-    background: none;
-    padding: 10px;
-    font-size: 1rem;
+[data-theme="dark"] {
+    /* Dark Theme Palette Tokens */
+    --background: #141218;
+    --on-background: #E6E1E5;
+    --surface: #211F26;
+    --on-surface: #E6E1E5;
+    --surface-variant: #49454F;
+    --on-surface-variant: #CAC4D0;
+    --primary: #D0BCFF;
+    --on-primary: #381E72;
+    --primary-container: #4F378B;
+    --on-primary-container: #EADDFF;
+    --secondary: #CCC2DC;
+    --on-secondary: #332D41;
+    --secondary-container: #4A4458;
+    --on-secondary-container: #E8DEF8;
+    --error: #F2B8B5;
+    --on-error: #601410;
+    --error-container: #8C1D18;
+    --on-error-container: #F9DEDC;
+    --outline: #938F99;
+    --elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.3), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+    --elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.3), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   02. RESET & BASE ELEMENTS
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--background);
     color: var(--on-background);
-    outline: none;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    line-height: 1.5;
 }
 
-.search-result-item {
+.tamil-text {
+    font-family: var(--font-serif-tamil);
+}
+
+/* ==========================================================================
+   03. LAYOUT & CONTAINERS
+   ========================================================================== */
+.top-app-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--top-bar-height);
     background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 10px;
-    cursor: pointer;
+    color: var(--on-surface);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 100;
+    transition: var(--transition-standard);
 }
 
-.search-result-ref {
-    font-size: 0.85rem;
-    font-weight: 700;
+.main-container {
+    margin-top: var(--top-bar-height);
+    margin-bottom: var(--bottom-nav-height);
+    padding: 16px;
+    min-height: calc(100vh - var(--top-bar-height) - var(--bottom-nav-height));
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 900px) {
+    .main-container {
+        margin-left: calc(var(--drawer-width) + 32px);
+        margin-right: auto;
+        margin-bottom: 32px;
+        max-width: 900px;
+    }
+    .top-app-bar {
+        left: var(--drawer-width);
+    }
+}
+
+/* ==========================================================================
+   04. UI COMPONENTS (BUTTONS, CARDS, INTERACTIVE)
+   ========================================================================== */
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-surface-variant);
+}
+
+.icon-button:hover {
+    background-color: var(--surface-variant);
+}
+
+.app-title {
+    font-size: 22px;
+    font-weight: 400;
+    flex-grow: 1;
+    margin-left: 12px;
+}
+
+.card {
+    background-color: var(--surface);
+    border-radius: var(--radius-large);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--elevation-1);
+    border: 1px solid transparent;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.btn {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 14px;
+    padding: 10px 24px;
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    justify-content: center;
+}
+
+.btn-filled {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.btn-tonal {
+    background-color: var(--secondary-container);
+    color: var(--on-secondary-container);
+}
+
+.btn-text {
+    background: none;
     color: var(--primary);
+}
+
+/* ==========================================================================
+   05. NAVIGATION MODULES (DRAWER & BOTTOM BAR)
+   ========================================================================== */
+.nav-drawer {
+    position: fixed;
+    top: 0;
+    left: calc(-1 * var(--drawer-width));
+    bottom: 0;
+    width: var(--drawer-width);
+    background-color: var(--surface);
+    z-index: 200;
+    padding: 24px 12px;
+    border-radius: 0 var(--radius-extra-large) var(--radius-extra-large) 0;
+    transition: var(--transition-standard);
+    box-shadow: var(--elevation-2);
+}
+
+.nav-drawer.open {
+    left: 0;
+}
+
+.drawer-header {
+    padding: 0 16px 24px 16px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    color: var(--on-surface-variant);
+    font-weight: 500;
     margin-bottom: 4px;
 }
 
-mark {
-    background-color: var(--hl-yellow);
-    color: #000;
-    font-weight: 500;
+.nav-link.active {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-height);
+    background-color: var(--surface);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 90;
+    box-shadow: var(--elevation-2);
+}
+
+.bottom-nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--on-surface-variant);
+    font-size: 12px;
+    gap: 4px;
+}
+
+.bottom-nav-link.active {
+    color: var(--primary);
+}
+
+.scrim {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 150;
+    display: none;
+}
+
+@media (min-width: 900px) {
+    .nav-drawer {
+        left: 0;
+        box-shadow: none;
+        border-right: 1px solid var(--surface-variant);
+    }
+    .bottom-nav, .scrim {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   06. BIBLE READER & VERSE DISPLAY SYSTEM
+   ========================================================================== */
+.verse-item {
+    padding: 12px;
+    border-radius: var(--radius-medium);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: var(--transition-standard);
+}
+
+.verse-item:hover {
+    background-color: var(--surface-variant);
+}
+
+.verse-item.selected {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+.verse-num {
+    font-weight: bold;
+    color: var(--primary);
+    margin-right: 8px;
+    font-size: 0.85em;
+}
+
+/* Paragraph Layout Configurations */
+.verses-content-wrapper.para-mode {
+    display: block;
+    text-align: justify;
+    line-height: 1.8;
+}
+
+.verses-content-wrapper.para-mode .verse-item {
+    display: inline;
+    padding: 2px 4px;
+    margin: 0;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   07. SEARCH & FILTER INTERACTION MECHANISMS
+   ========================================================================== */
+.search-app-bar {
+    padding: 0 8px;
+}
+
+.search-field-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface-variant);
+    border-radius: var(--radius-full);
+    flex-grow: 1;
+    height: 48px;
+    padding: 0 16px;
+    margin: 0 8px;
+}
+
+.search-field-container input {
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    color: var(--on-surface);
+    font-size: 16px;
+}
+
+.highlight {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    font-weight: bold;
     border-radius: 2px;
 }
 
 /* ==========================================================================
-   Settings Panel Forms Configurations
+   08. REUSABLE ATOMS & CONTROLS (SWITCHES, SEGMENTS)
    ========================================================================== */
-.settings-group {
-    margin-bottom: 24px;
-}
-
-.settings-label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--primary);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    letter-spacing: 0.5px;
-}
-
-.setting-row {
+.segmented-control {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-}
-
-.setting-info h4 {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.setting-info p {
-    font-size: 0.85rem;
-    color: var(--on-surface-muted);
-}
-
-select {
-    padding: 8px 12px;
-    border-radius: 6px;
     background-color: var(--surface-variant);
-    color: var(--on-background);
-    border: 1px solid var(--border);
-    font-size: 0.95rem;
-    outline: none;
+    border-radius: var(--radius-full);
+    padding: 4px;
+    margin-bottom: 16px;
 }
 
-/* Utility Layout Modifiers */
-.flex-row-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-}
-
-.btn-danger-outline {
+.segment-btn {
+    flex: 1;
+    border: none;
     background: none;
-    border: 1px solid #d93025;
-    color: #d93025;
-    padding: 10px 16px;
-    border-radius: 6px;
+    padding: 10px;
+    border-radius: var(--radius-full);
     cursor: pointer;
     font-weight: 500;
+    color: var(--on-surface-variant);
 }
 
-.btn-danger-outline:hover {
-    background-color: rgba(217, 48, 37, 0.05);
+.segment-btn.active {
+    background-color: var(--surface);
+    color: var(--primary);
+    box-shadow: var(--elevation-1);
 }
+
+.md-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 32px;
+}
+
+.md-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--surface-variant);
+    border: 2px solid var(--outline);
+    border-radius: var(--radius-full);
+    transition: .2s;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 6px;
+    bottom: 6px;
+    background-color: var(--outline);
+    border-radius: 50%;
+    transition: .2s;
+}
+
+input:checked + .switch-slider {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+input:checked + .switch-slider:before {
+    transform: translateX(20px);
+    background-color: var(--on-primary);
+    height: 24px;
+    width: 24px;
+    left: 2px;
+    bottom: 2px;
+}
+
+/* ==========================================================================
+   09. ANIMATIONS & PROGRESS INDICATORS
+   ========================================================================== */
+.loading-state-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    gap: 16px;
+}
+
+.circular-progress-indicator {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--surface-variant);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Helper Utility Display Configurations */
+.hidden-section { display: none !important; }
+.active-section { display: block !important; }
