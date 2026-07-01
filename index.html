@@ -1,123 +1,180 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="ta" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>தமிழ் பைபிள் ரீடர் | Tamil Bible Reader</title>
+    <title>தமிழ் பைபிள் வாசகர் (Tamil Bible Reader)</title>
     
-    <meta name="description" content="அனைத்து 66 புத்தகங்களையும் எளிதாக வாசிக்க, தேட மற்றும் தியானிக்க ஒரு நவீன தமிழ் பைபிள் செயலி.">
-    <meta name="keywords" content="Tamil Bible, தமிழ் பைபிள், Bible Gateway, YouVersion Tamil, Daily Verse, PWA Bible">
-    <meta name="author" content="Tamil Bible Reader Team">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="தமிழ் பைபிள் ரீடர் | Tamil Bible Reader">
-    <meta property="og:description" content="அனைத்து 66 புத்தகங்களையும் எளிதாக வாசிக்க, தேட மற்றும் தியானிக்க ஒரு நவீன தமிழ் பைபிள் செயலி.">
-    <meta property="og:image" content="icons/icon-512x512.png">
-
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="தமிழ் பைபிள் ரீடர் | Tamil Bible Reader">
-    <meta property="twitter:description" content="அனைத்து 66 புத்தகங்களையும் எளிதாக வாசிக்க, தேட மற்றும் தியானிக்க ஒரு நவீன தமிழ் பைபிள் செயலி.">
-
-    <meta name="theme-color" content="#1a73e8">
+    <meta name="theme-color" content="#6750A4">
+    <meta name="description" content="முழுமையான தமிழ் பைபிள் செயலி - ஆஃப்லைன் வசதியுடன்">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Latha:wght@400;700&family=Noto+Serif+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="app-bar">
-        <div class="app-bar-container">
-            <h1 class="app-title">தமிழ் பைபிள்</h1>
-            <div class="header-actions">
-                <button id="installAppBtn" class="btn-icon" style="display: none;" title="Install App">
-                    <span class="material-icons-round">download</span>
-                </button>
-                <a href="settings.html" class="btn-icon" title="அமைப்புகள்">
-                    <span class="material-icons-round">settings</span>
-                </a>
-            </div>
-        </div>
+    <header class="top-app-bar">
+        <button class="icon-button" id="menuBtn" aria-label="Menu">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h1 class="app-title">தமிழ் பைபிள்</h1>
+        <button class="icon-button" id="themeToggleBtn" aria-label="Toggle Theme">
+            <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+        </button>
     </header>
+
+    <aside class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <h2>பரிசுத்த வேதாகமம்</h2>
+            <p>Tamil Bible PWA</p>
+        </div>
+        <nav class="drawer-nav">
+            <a href="index.html" class="nav-link active">
+                <span class="material-symbols-outlined">home</span>
+                <span>முகப்பு (Home)</span>
+            </a>
+            <a href="reader.html" class="nav-link">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span>வாசிக்க (Read)</span>
+            </a>
+            <a href="search.html" class="nav-link">
+                <span class="material-symbols-outlined">search</span>
+                <span>தேடல் (Search)</span>
+            </a>
+            <a href="favorites.html" class="nav-link">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span>பிடித்தவை (Favorites)</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="material-symbols-outlined">settings</span>
+                <span>அமைப்புகள் (Settings)</span>
+            </a>
+            <a href="about.html" class="nav-link">
+                <span class="material-symbols-outlined">info</span>
+                <span>பற்றி (About)</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="scrim" id="scrim"></div>
 
     <main class="main-container">
         
-        <section class="card daily-verse-card">
-            <div class="card-badge">இன்றைய வசனம்</div>
-            <p id="dailyVerseText" class="verse-text">வசனம் ஏற்றப்படுகிறது...</p>
-            <p id="dailyVerseRef" class="verse-reference">-</p>
+        <section class="card daily-verse-card animate-fade-in">
+            <div class="card-header">
+                <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                <span class="card-subtitle">இன்றைய வசனம் (Daily Verse)</span>
+            </div>
+            <div class="card-body">
+                <p id="dailyVerseText" class="tamil-text">வசனம் ஏற்றப்படுகிறது...</p>
+                <p id="dailyVerseRef" class="verse-reference">— ஆதியாகமம் 1:1</p>
+            </div>
             <div class="card-actions">
-                <button id="shareDailyVerse" class="btn-text">
-                    <span class="material-icons-round">share</span> பகிர்
+                <button class="btn btn-text" id="shareDailyBtn">
+                    <span class="material-symbols-outlined">share</span> பகிர்ந்து கொள்க
                 </button>
-                <button id="copyDailyVerse" class="btn-text">
-                    <span class="material-icons-round">content_copy</span> நகலெடு
+                <button class="btn btn-filled" id="readDailyBtn">
+                    <span class="material-symbols-outlined">book_2</span> வாசிக்க
                 </button>
             </div>
         </section>
 
-        <div class="quick-status-grid">
-            <section class="card status-card" id="continueReadingCard" style="display: none;">
-                <h3 class="card-subtitle"><span class="material-icons-round">menu_book</span> தொடர்ந்து வாசிக்க</h3>
-                <p id="continueReadingTarget" class="status-text">-</p>
-                <a id="continueReadingLink" href="#" class="btn-primary-sm">தொடரவும்</a>
-            </section>
+        <section class="dashboard-grid">
             
-            <section class="card status-card">
-                <h3 class="card-subtitle"><span class="material-icons-round">history</span> அண்மையில் படித்தவை</h3>
-                <ul id="recentList" class="recent-list">
-                    <li class="empty-text">வரலாறு இல்லை</li>
-                </ul>
-            </section>
-        </div>
-
-        <div class="inline-search-box" onclick="location.href='search.html'">
-            <span class="material-icons-round">search</span>
-            <span>அனைத்து 66 புத்தகங்களிலும் தேடுங்கள்...</span>
-        </div>
-
-        <div class="tabs-container">
-            <button id="tabOld" class="tab-btn active" onclick="switchTestament('old')">பழைய ஏற்பாடு</button>
-            <button id="tabNew" class="tab-btn" onclick="switchTestament('new')">புதிய ஏற்பாடு</button>
-        </div>
-
-        <section class="books-grid-section">
-            <div id="booksGrid" class="books-grid">
+            <div class="card progress-card">
+                <div class="card-header">
+                    <span class="material-symbols-outlined text-secondary">analytics</span>
+                    <span class="card-title">வாசிப்பு நிலை</span>
                 </div>
+                <div class="card-body">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="readingProgressBar" style="width: 0%;"></div>
+                    </div>
+                    <p class="progress-text" id="readingProgressText">தொடங்கப்படவில்லை</p>
+                </div>
+            </div>
+
+            <div class="card history-card" id="historyCard">
+                <div class="card-header">
+                    <span class="material-symbols-outlined text-secondary">history</span>
+                    <span class="card-title">கடந்த முறை வாசித்தது</span>
+                </div>
+                <div class="card-body">
+                    <h3 id="lastReadTitle" class="tamil-text">வரலாறு இல்லை</h3>
+                    <p id="lastReadTime" class="meta-text">—</p>
+                </div>
+                <div class="card-actions">
+                    <a href="#" class="btn btn-tonal" id="resumeReadingBtn" style="display: none;">
+                        <span class="material-symbols-outlined">play_arrow</span> தொடர்க
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-access-menu">
+            <h2 class="section-title">விரைவு மெனு</h2>
+            <div class="menu-grid">
+                <a href="reader.html" class="menu-item">
+                    <span class="material-symbols-outlined menu-icon">menu_book</span>
+                    <span class="menu-label">பழைய ஏற்பாடு</span>
+                </a>
+                <a href="reader.html?testament=NT" class="menu-item">
+                    <span class="material-symbols-outlined menu-icon">auto_stories</span>
+                    <span class="menu-label">புதிய ஏற்பாடு</span>
+                </a>
+                <a href="favorites.html" class="menu-item">
+                    <span class="material-symbols-outlined menu-icon">grade</span>
+                    <span class="menu-label">குறிப்புகள்</span>
+                </a>
+                <a href="search.html" class="menu-item">
+                    <span class="material-symbols-outlined menu-icon">manage_search</span>
+                    <span class="menu-label">மேம்பட்ட தேடல்</span>
+                </a>
+            </div>
         </section>
 
     </main>
 
-    <a href="search.html" class="fab" aria-label="தேடல்">
-        <span class="material-icons-round">search</span>
-    </a>
-
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item active">
-            <span class="material-icons-round">home</span>
-            <span class="nav-label">முகப்பு</span>
+        <a href="index.html" class="bottom-nav-link active">
+            <span class="material-symbols-outlined">home</span>
+            <span class="bottom-nav-label">முகப்பு</span>
         </a>
-        <a href="search.html" class="nav-item">
-            <span class="material-icons-round">search</span>
-            <span class="nav-label">தேடல்</span>
+        <a href="reader.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">auto_stories</span>
+            <span class="bottom-nav-label">வாசிக்க</span>
         </a>
-        <a href="favorites.html" class="nav-item">
-            <span class="material-icons-round">bookmark</span>
-            <span class="nav-label">சேமித்தவை</span>
+        <a href="search.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">search</span>
+            <span class="bottom-nav-label">தேடல்</span>
         </a>
-        <a href="about.html" class="nav-item">
-            <span class="material-icons-round">info</span>
-            <span class="nav-label">செயலி</span>
+        <a href="favorites.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">bookmark</span>
+            <span class="bottom-nav-label">பிடித்தவை</span>
+        </a>
+        <a href="settings.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="bottom-nav-label">அமைப்புகள்</span>
         </a>
     </nav>
 
     <script src="books.js"></script>
     <script src="settings.js"></script>
     <script src="app.js"></script>
+    <script>
+        // Service Worker Registration for PWA implementation
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered contextually.', reg.scope))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>
