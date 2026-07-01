@@ -1,287 +1,155 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="ta" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>வாசிப்பு | Tamil Bible Reader</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <title>வாசிப்பு பகுதி (Bible Reader) - தமிழ் பைபிள்</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
+    <!-- Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="reader-layout">
 
-    <header class="app-bar">
-        <div class="app-bar-container">
-            <button id="backToReaderBtn" class="btn-icon" aria-label="Back">
-                <span class="material-icons-round">arrow_back</span>
+    <!-- Top Action App Bar Layout -->
+    <header class="top-app-bar structural-header">
+        <button class="icon-button" id="backBtn" aria-label="Go Back">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="header-title-container">
+            <h1 class="app-title tamil-text" id="chapterHeaderTitle">அதிகாரம்</h1>
+            <span class="sub-caption-text" id="chapterHeaderEnglish">Loading...</span>
+        </div>
+        <div class="header-action-group">
+            <button class="icon-button" id="textSettingsBtn" aria-label="Text Settings">
+                <span class="material-symbols-outlined">text_fields</span>
             </button>
-            <h1 id="chapterTitle" class="app-title">அதிகாரம்</h1>
-            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="btn-icon" title="மேலே செல்ல">
-                <span class="material-icons-round">arrow_upward</span>
+            <button class="icon-button" id="themeToggleBtn" aria-label="Toggle Theme">
+                <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
             </button>
         </div>
     </header>
 
-    <main class="main-container">
-        
-        <div class="card">
-            <div class="reader-nav-row">
-                <button id="prevChapBtn" class="btn-text"><span class="material-icons-round">chevron_left</span> முந்தைய</button>
-                <span id="chapterSubLabel" class="reader-title">-</span>
-                <button id="nextChapBtn" class="btn-text">அடுத்தது <span class="material-icons-round">chevron_right</span></button>
+    <!-- Navigation Drawer Sidebar Module -->
+    <aside class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <h2>பரிசுத்த வேதாகமம்</h2>
+            <p>Tamil Bible PWA</p>
+        </div>
+        <nav class="drawer-nav">
+            <a href="index.html" class="nav-link">
+                <span class="material-symbols-outlined">home</span>
+                <span>முகப்பு (Home)</span>
+            </a>
+            <a href="reader.html" class="nav-link active">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span>வாசிக்க (Read)</span>
+            </a>
+            <a href="search.html" class="nav-link">
+                <span class="material-symbols-outlined">search</span>
+                <span>தேடல் (Search)</span>
+            </a>
+            <a href="favorites.html" class="nav-link">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span>பிடித்தவை (Favorites)</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="material-symbols-outlined">settings</span>
+                <span>அமைப்புகள் (Settings)</span>
+            </a>
+            <a href="about.html" class="nav-link">
+                <span class="material-symbols-outlined">info</span>
+                <span>பற்றி (About)</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <!-- Contextual Context Formatting Overlay Panel (Font size, Paragraph/Verse mode) -->
+    <div class="context-overlay-card" id="textSettingsPanel" aria-hidden="true">
+        <div class="overlay-row">
+            <span class="label-text">எழுத்தின் அளவு (Font Size)</span>
+            <div class="segmented-control mini-control">
+                <button class="segment-btn square-btn" id="decFontBtn" aria-label="Decrease Font Size">—</button>
+                <span class="display-value" id="fontSizeDisplay">18px</span>
+                <button class="segment-btn square-btn" id="incFontBtn" aria-label="Increase Font Size">+</button>
             </div>
         </div>
-
-        <div id="versesViewer" class="verses-container card">
-            <p class="empty-text">திருவசனங்கள் ஏற்றப்படுகிறது...</p>
-        </div>
-
-    </main>
-
-    <div id="selectionModal" class="action-modal">
-        <div class="modal-row">
-            <div class="hl-palette">
-                <div class="color-dot hl-y" onclick="applyHighlight('hl-y')"></div>
-                <div class="color-dot hl-g" onclick="applyHighlight('hl-g')"></div>
-                <div class="color-dot hl-b" onclick="applyHighlight('hl-b')"></div>
-                <div class="color-dot hl-p" onclick="applyHighlight('hl-p')"></div>
-                <div class="btn-icon" onclick="applyHighlight('clear')" title="Clear Highlight" style="background-color: var(--surface-variant)">
-                    <span class="material-icons-round">format_color_reset</span>
-                </div>
+        <div class="overlay-row">
+            <span class="label-text">வாசிப்பு முறை (Reading Mode)</span>
+            <div class="segmented-control mini-control" role="radiogroup">
+                <button class="segment-btn mini-btn active" id="modeVerseBtn" role="radio" aria-checked="true">வரி வரியாக</button>
+                <button class="segment-btn mini-btn" id="modeParaBtn" role="radio" aria-checked="false">பத்தியாக</button>
             </div>
-        </div>
-        <div class="modal-row" style="border-top: 1px solid var(--border); padding-top: 8px;">
-            <button onclick="executeModalAction('copy')" class="btn-text"><span class="material-icons-round">content_copy</span> நகலெடு</button>
-            <button onclick="executeModalAction('share')" class="btn-text"><span class="material-icons-round">share</span> பகிர்</button>
-            <button onclick="executeModalAction('fav')" class="btn-text"><span class="material-icons-round">bookmark</span> சேமி</button>
-            <button onclick="closeSelectionModal()" class="btn-text" style="color: var(--on-surface-muted)"><span class="material-icons-round">close</span> மூடு</button>
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="index.html" class="nav-item">
-            <span class="material-icons-round">home</span>
-            <span class="nav-label">முகப்பு</span>
-        </a>
-        <a href="search.html" class="nav-item">
-            <span class="material-icons-round">search</span>
-            <span class="nav-label">தேடல்</span>
-        </a>
-        <a href="favorites.html" class="nav-item">
-            <span class="material-icons-round">bookmark</span>
-            <span class="nav-label">சேமித்தவை</span>
-        </a>
-        <a href="about.html" class="nav-item">
-            <span class="material-icons-round">info</span>
-            <span class="nav-label">செயலி</span>
-        </a>
-    </nav>
+    <!-- Main Dynamic Text Container Content -->
+    <main class="main-container scroll-container" id="versesContainer">
+        
+        <!-- Loading State Indication Template -->
+        <div class="loading-state-view" id="versesLoader">
+            <div class="circular-progress-indicator"></div>
+            <p class="tamil-text">வேதாகம வசனங்கள் லோடு செய்யப்படுகிறது...</p>
+        </div>
 
+        <!-- Render Target for Dynamic Verses Elements Grid -->
+        <div class="verses-content-wrapper verse-mode" id="versesRenderGrid"></div>
+
+        <!-- Intercept Layout Pagination Navigation Triggers -->
+        <nav class="pagination-flow-nav" id="paginationNav" style="display: none;">
+            <button class="btn btn-tonal pagination-btn" id="prevChapterBtn">
+                <span class="material-symbols-outlined">chevron_left</span>
+                <div class="btn-stack-labels">
+                    <span class="action-hint">முந்தைய</span>
+                    <span id="prevBtnLabel" class="tamil-text">அதிகாரம்</span>
+                </div>
+            </button>
+            <button class="btn btn-tonal pagination-btn" id="nextChapterBtn">
+                <div class="btn-stack-labels alignment-end">
+                    <span class="action-hint">அடுத்தது</span>
+                    <span id="nextBtnLabel" class="tamil-text">அதிகாரம்</span>
+                </div>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </nav>
+
+    </main>
+
+    <!-- Contextual Verse Actions Bar (Copy/Favorite/Share Modal Drawer Bottom Menu) -->
+    <div class="action-context-toast" id="verseActionToast" aria-hidden="true">
+        <div class="toast-meta-container">
+            <span id="toastSelectionRef" class="verse-reference">1 வசனம் தேர்ந்தெடுக்கப்பட்டது</span>
+        </div>
+        <div class="toast-actions-wrapper">
+            <button class="action-chip" id="toastCopyBtn">
+                <span class="material-symbols-outlined">content_copy</span> நகலெடு
+            </button>
+            <button class="action-chip" id="toastFavBtn">
+                <span class="material-symbols-outlined" id="toastFavIcon">bookmark</span> சேமி
+            </button>
+            <button class="action-chip" id="toastShareBtn">
+                <span class="material-symbols-outlined">share</span> பகிருக
+            </button>
+            <button class="icon-button invert-icon" id="clearSelectionBtn" aria-label="Clear Selection">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Global Application Engine Dependencies -->
     <script src="books.js"></script>
     <script src="settings.js"></script>
-    <script>
-        let currentBookId, currentChapterNum, currentBookObj;
-        let selectedVerseId = null, selectedVerseText = null;
-        let globalBookDataInstance = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            currentBookId = urlParams.get('book') || 'Genesis';
-            currentChapterNum = parseInt(urlParams.get('chapter')) || 1;
-            
-            currentBookObj = bibleBooksData.find(b => b.id === currentBookId);
-            if(!currentBookObj) return;
-
-            document.getElementById('backToReaderBtn').onclick = () => {
-                location.href = `reader.html?book=${encodeURIComponent(currentBookId)}`;
-            };
-
-            // Update Metadata Controls UI Layout Header Strings Titles
-            document.getElementById('chapterTitle').innerText = `${currentBookObj.ta} ${currentChapterNum}`;
-            document.getElementById('chapterSubLabel').innerText = `அதிகாரம் ${currentChapterNum}`;
-
-            // Handle Nav Systems Pipeline Mapping Trackers Switches Configurations
-            setupNavigationControls();
-            
-            // Execute Database Read Pipeline Strategy Process Output Hooks Engines
-            loadChapterData();
-            
-            // Log Metrics Trackers Parameters Data State Layers Rules
-            trackReadingHistory();
-        });
-
-        function setupNavigationControls() {
-            const prevBtn = document.getElementById('prevChapBtn');
-            const nextBtn = document.getElementById('nextChapBtn');
-
-            if (currentChapterNum > 1) {
-                prevBtn.onclick = () => navigateTo(currentBookId, currentChapterNum - 1);
-            } else {
-                const bookIndex = bibleBooksData.findIndex(b => b.id === currentBookId);
-                if (bookIndex > 0) {
-                    const prevBook = bibleBooksData[bookIndex - 1];
-                    prevBtn.onclick = () => navigateTo(prevBook.id, prevBook.chapters);
-                } else {
-                    prevBtn.style.visibility = 'hidden';
-                }
-            }
-
-            if (currentChapterNum < currentBookObj.chapters) {
-                nextBtn.onclick = () => navigateTo(currentBookId, currentChapterNum + 1);
-            } else {
-                const bookIndex = bibleBooksData.findIndex(b => b.id === currentBookId);
-                if (bookIndex < bibleBooksData.length - 1) {
-                    const nextBook = bibleBooksData[bookIndex + 1];
-                    nextBtn.onclick = () => navigateTo(nextBook.id, 1);
-                } else {
-                    nextBtn.style.visibility = 'hidden';
-                }
-            }
-        }
-
-        function navigateTo(book, chap) {
-            location.href = `chapter.html?book=${encodeURIComponent(book)}&chapter=${chap}`;
-        }
-
-        function loadChapterData() {
-            const viewer = document.getElementById('versesViewer');
-            fetch(`books/${currentBookId}.json`)
-                .then(res => res.json())
-                .then(data => {
-                    globalBookDataInstance = data;
-                    viewer.innerHTML = '';
-                    
-                    // Strict Compliance Path Traversal Framework Schema Mapping Rule Matching
-                    const versesList = data.Book[0].Chapter[currentChapterNum - 1].Verse;
-                    
-                    // Fetch local cache store maps configurations tables matrices
-                    const highlights = JSON.parse(localStorage.getItem('tb_hl')) || {};
-                    
-                    versesList.forEach((v, index) => {
-                        const vNum = index + 1;
-                        const row = document.createElement('div');
-                        row.className = 'verse-row';
-                        row.id = `v-${vNum}`;
-                        
-                        // Apply existing dynamic styling modifiers safely
-                        const key = `${currentBookId}_${currentChapterNum}_${vNum}`;
-                        if(highlights[key]) {
-                            row.classList.add(highlights[key]);
-                        }
-
-                        row.innerHTML = `<span class="verse-num">${vNum}</span><span class="v-txt">${v.Verse}</span>`;
-                        row.onclick = (e) => handleVerseSelection(vNum, v.Verse, row, e);
-                        
-                        viewer.appendChild(row);
-                    });
-                })
-                .catch(() => {
-                    viewer.innerHTML = '<p class="empty-text" style="color:red;">தரவிறக்கம் செய்ய இயலவில்லை. கோப்பு அமைப்பை சரிபார்க்கவும்.</p>';
-                });
-        }
-
-        function handleVerseSelection(num, text, element, event) {
-            event.stopPropagation();
-            
-            // Toggle highlight visual context selector states tracking systems rules maps
-            document.querySelectorAll('.verse-row').forEach(r => r.style.border = 'none');
-            
-            if(selectedVerseId === num) {
-                closeSelectionModal();
-                return;
-            }
-
-            selectedVerseId = num;
-            selectedVerseText = text;
-            element.style.border = '1px solid var(--primary)';
-            
-            document.getElementById('selectionModal').classList.add('show');
-        }
-
-        function closeSelectionModal() {
-            selectedVerseId = null;
-            selectedVerseText = null;
-            document.querySelectorAll('.verse-row').forEach(r => r.style.border = 'none');
-            document.getElementById('selectionModal').classList.remove('show');
-        }
-
-        function applyHighlight(colorClass) {
-            if(!selectedVerseId) return;
-            const key = `${currentBookId}_${currentChapterNum}_${selectedVerseId}`;
-            const highlights = JSON.parse(localStorage.getItem('tb_hl')) || {};
-            const element = document.getElementById(`v-${selectedVerseId}`);
-
-            // Wipe out existing palette indicators formatting layout structures safely
-            element.classList.remove('hl-y', 'hl-g', 'hl-b', 'hl-p');
-
-            if(colorClass === 'clear') {
-                delete highlights[key];
-            } else {
-                highlights[key] = colorClass;
-                element.classList.add(colorClass);
-            }
-
-            localStorage.setItem('tb_hl', JSON.stringify(highlights));
-            closeSelectionModal();
-        }
-
-        function executeModalAction(type) {
-            if(!selectedVerseId) return;
-            const referenceStr = `${currentBookObj.ta} ${currentChapterNum}:${selectedVerseId}`;
-            const completeOutputStr = `"${selectedVerseText}" - ${referenceStr}`;
-
-            if(type === 'copy') {
-                navigator.clipboard.writeText(completeOutputStr);
-                alert('வசனம் நகலெடுக்கப்பட்டது!');
-                closeSelectionModal();
-            } else if(type === 'share') {
-                if(navigator.share) {
-                    navigator.share({ title: 'வேத வசனம்', text: completeOutputStr });
-                } else {
-                    alert('உலாவியில் பகிர்வு வசதி இல்லை.');
-                }
-                closeSelectionModal();
-            } else if(type === 'fav') {
-                const favs = JSON.parse(localStorage.getItem('tb_fav_verses')) || [];
-                const itemKey = `${currentBookId}_${currentChapterNum}_${selectedVerseId}`;
-                
-                if(!favs.some(f => f.key === itemKey)) {
-                    favs.push({
-                        key: itemKey,
-                        bookTa: currentBookObj.ta,
-                        bookId: currentBookId,
-                        chapter: currentChapterNum,
-                        verse: selectedVerseId,
-                        text: selectedVerseText
-                    });
-                    localStorage.setItem('tb_fav_verses', JSON.stringify(favs));
-                    alert('வசனம் சேமிக்கப்பட்டது!');
-                } else {
-                    alert('ஏற்கனவே சேமிக்கப்பட்டுள்ளது.');
-                }
-                closeSelectionModal();
-            }
-        }
-
-        function trackReadingHistory() {
-            // Save state indicators metrics tracking pipelines for return links bindings execution processes
-            const lastState = { bookId: currentBookId, bookTa: currentBookObj.ta, chapter: currentChapterNum };
-            localStorage.setItem('tb_last_read', JSON.stringify(lastState));
-
-            // Log entry tracking pipeline matrices system logs arrays lists records
-            let history = JSON.parse(localStorage.getItem('tb_history')) || [];
-            const timeStr = new Date().toLocaleDateString('ta-IN', {month:'short', day:'numeric'});
-            
-            // Remove matching entry patterns maps targets safely
-            history = history.filter(h => !(h.bookId === currentBookId && h.chapter === currentChapterNum));
-            history.unshift({ bookId: currentBookId, bookTa: currentBookObj.ta, chapter: currentChapterNum, time: timeStr });
-            
-            localStorage.setItem('tb_history', JSON.stringify(history.slice(0, 10)));
-        }
-
-        // Close on global layout canvas click actions intercepts triggers execution paths
-        document.onclick = () => closeSelectionModal();
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
