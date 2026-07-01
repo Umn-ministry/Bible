@@ -1,142 +1,183 @@
+
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="ta" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>அமைப்புகள் | Tamil Bible Reader</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <title>அமைப்புகள் (Settings) - தமிழ் பைபிள்</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
+    <!-- Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="app-bar">
-        <div class="app-bar-container">
-            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
-                <span class="material-icons-round">arrow_back</span>
-            </button>
-            <h1 class="app-title">பயன்பாட்டு அமைப்புகள்</h1>
-            <div style="width:40px;"></div>
-        </div>
+    <!-- Top App Bar -->
+    <header class="top-app-bar">
+        <button class="icon-button" id="menuBtn" aria-label="Menu">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h1 class="app-title">அமைப்புகள்</h1>
+        <button class="icon-button" id="themeToggleBtn" aria-label="Toggle Theme">
+            <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+        </button>
     </header>
 
-    <main class="main-container">
+    <!-- Navigation Drawer -->
+    <aside class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <h2>பரிசுத்த வேதாகமம்</h2>
+            <p>Tamil Bible PWA</p>
+        </div>
+        <nav class="drawer-nav">
+            <a href="index.html" class="nav-link">
+                <span class="material-symbols-outlined">home</span>
+                <span>முகப்பு (Home)</span>
+            </a>
+            <a href="reader.html" class="nav-link">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span>வாசிக்க (Read)</span>
+            </a>
+            <a href="search.html" class="nav-link">
+                <span class="material-symbols-outlined">search</span>
+                <span>தேடல் (Search)</span>
+            </a>
+            <a href="favorites.html" class="nav-link">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span>பிடித்தவை (Favorites)</span>
+            </a>
+            <a href="settings.html" class="nav-link active">
+                <span class="material-symbols-outlined">settings</span>
+                <span>அமைப்புகள் (Settings)</span>
+            </a>
+            <a href="about.html" class="nav-link">
+                <span class="material-symbols-outlined">info</span>
+                <span>பற்றி (About)</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <!-- Main Content Container Area -->
+    <main class="main-container Layout-Settings-Root">
         
-        <section class="card">
-            <div class="settings-group">
-                <div class="settings-label">காட்சித் தோற்றம் (Theme)</div>
-                <div class="setting-row">
-                    <div class="setting-info">
-                        <h4>தீம் தேர்வு</h4>
-                        <p>பயன்பாட்டின் பின்னணி வண்ணத்தை மாற்றவும்</p>
-                    </div>
-                    <select id="settingThemeSelect" onchange="processSettingsChange()">
-                        <option value="system">கணினி அமைப்பு (System)</option>
-                        <option value="light">பகல் பொழுது (Light)</option>
-                        <option value="dark">இரவுப் பொழுது (Dark)</option>
-                    </select>
-                </div>
+        <!-- Theme Customization Option List Card -->
+        <section class="settings-card card">
+            <div class="card-header">
+                <span class="material-symbols-outlined text-primary">palette</span>
+                <h3 class="card-title">காட்சி வடிவமைப்பு (Display)</h3>
             </div>
-
-            <div class="settings-group">
-                <div class="settings-label">எழுத்துரு வடிவமைப்பு (Typography)</div>
-                <div class="setting-row">
-                    <div class="setting-info">
-                        <h4>எழுத்தின் அளவு</h4>
-                        <p>வசனங்கள் வாசிப்பதற்கான அளவு</p>
+            <div class="card-body row-layout-list">
+                
+                <!-- Theme Toggle Setting Row -->
+                <div class="setting-item-row">
+                    <div class="setting-meta-text">
+                        <span class="setting-label-header">இருண்ட தீம் (Dark Theme)</span>
+                        <span class="setting-caption-label">இரவு நேர வாசிப்பிற்கு உகந்தது</span>
                     </div>
-                    <select id="settingSizeSelect" onchange="processSettingsChange()">
-                        <option value="14px">சிறியது</option>
-                        <option value="16px">சாதாரண அளவு</option>
-                        <option value="19px">பெரியது</option>
-                        <option value="22px">மிகப் பெரியது</option>
-                    </select>
+                    <div class="switch-control-container">
+                        <label class="md-switch" for="settingsThemeSwitch">
+                            <input type="checkbox" id="settingsThemeSwitch">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="setting-row">
-                    <div class="setting-info">
-                        <h4>தமிழ் எழுத்துரு பாணி</h4>
-                        <p>விருப்பமான தமிழ் விசை எழுத்துரு பாணி</p>
+                <hr class="divider-line">
+
+                <!-- Font Size Config Row -->
+                <div class="setting-item-row vertical-stack-mobile">
+                    <div class="setting-meta-text">
+                        <span class="setting-label-header">எழுத்தின் அளவு (Font Size)</span>
+                        <span class="setting-caption-label">வாசிப்புப் பகுதி எழுத்துக்களின் அளவு</span>
                     </div>
-                    <select id="settingFontSelect" onchange="processSettingsChange()">
-                        <option value="sans">நவீன வடிவம் (Sans-Serif)</option>
-                        <option value="serif">பாரம்பரிய வடிவம் (Serif)</option>
-                    </select>
+                    <div class="segmented-control settings-inline-control">
+                        <button class="segment-btn square-btn" id="settingsDecFontBtn" aria-label="Decrease Font Size">—</button>
+                        <span class="display-value" id="settingsFontSizeVal">18px</span>
+                        <button class="segment-btn square-btn" id="settingsIncFontBtn" aria-label="Increase Font Size">+</button>
+                    </div>
                 </div>
+
+                <hr class="divider-line">
+
+                <!-- Reading View Type Configuration Option Row -->
+                <div class="setting-item-row vertical-stack-mobile">
+                    <div class="setting-meta-text">
+                        <span class="setting-label-header">வாசிப்பு முறை (Reading Mode)</span>
+                        <span class="setting-caption-label">வசனங்களை அடுக்கிக் காட்டும் வடிவமைப்பு</span>
+                    </div>
+                    <div class="segmented-control settings-inline-control" role="radiogroup">
+                        <button class="segment-btn settings-mode-btn" id="settingsModeVerseBtn" role="radio" aria-checked="true">வரி வரியாக</button>
+                        <button class="segment-btn settings-mode-btn" id="settingsModeParaBtn" role="radio" aria-checked="false">பத்தியாக</button>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <section class="card">
-            <div class="settings-label" style="color:#d93025;">தரவு மேலாண்மை (Data Management)</div>
-            <p class="empty-text" style="margin-bottom:12px;">பயன்பாட்டின் தற்காலிக சேமிப்புகள், வரலாறு மற்றும் குறிப்புகளை மீட்டமைக்கலாம்.</p>
-            <div class="flex-row-buttons">
-                <button class="btn-danger-outline" onclick="triggerFactoryResetPipeline()">அனைத்து அமைப்புகளையும் மீட்டமை</button>
+        <!-- System Maintenance Configuration Options Card -->
+        <section class="settings-card card data-management-card">
+            <div class="card-header">
+                <span class="material-symbols-outlined text-error">database</span>
+                <h3 class="card-title text-error">தரவு மேலாண்மை (Data Management)</h3>
+            </div>
+            <div class="card-body row-layout-list">
+                
+                <!-- Reset App Option Row -->
+                <div class="setting-item-row vertical-stack-mobile">
+                    <div class="setting-meta-text">
+                        <span class="setting-label-header">வரலாறு மற்றும் சேமிப்புகளை அழி</span>
+                        <span class="setting-caption-label text-error">குறிப்பு: சேமித்த அனைத்து வசனங்களும், வாசிப்பு நிலைகளும் நிரந்தரமாக நீக்கப்படும்.</span>
+                    </div>
+                    <button class="btn btn-tonal error-tonal-btn" id="resetApplicationDataBtn">
+                        <span class="material-symbols-outlined">delete_forever</span> அனைத்தையும் அழி
+                    </button>
+                </div>
+
             </div>
         </section>
 
     </main>
 
+    <!-- Bottom Navigation Bar (Mobile View Sync Layout) -->
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item">
-            <span class="material-icons-round">home</span>
-            <span class="nav-label">முகப்பு</span>
+        <a href="index.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">home</span>
+            <span class="bottom-nav-label">முகப்பு</span>
         </a>
-        <a href="search.html" class="nav-item">
-            <span class="material-icons-round">search</span>
-            <span class="nav-label">தேடல்</span>
+        <a href="reader.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">auto_stories</span>
+            <span class="bottom-nav-label">வாசிக்க</span>
         </a>
-        <a href="favorites.html" class="nav-item">
-            <span class="material-icons-round">bookmark</span>
-            <span class="nav-label">சேமித்தவை</span>
+        <a href="search.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">search</span>
+            <span class="bottom-nav-label">தேடல்</span>
         </a>
-        <a href="about.html" class="nav-item">
-            <span class="material-icons-round">info</span>
-            <span class="nav-label">செயலி</span>
+        <a href="favorites.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">bookmark</span>
+            <span class="bottom-nav-label">பிடித்தவை</span>
+        </a>
+        <a href="settings.html" class="bottom-nav-link active">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="bottom-nav-label">அமைப்புகள்</span>
         </a>
     </nav>
 
+    <!-- Script assets parsed sequentially -->
+    <script src="books.js"></script>
     <script src="settings.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            populateCurrentSettingsFormFields();
-        });
-
-        function populateCurrentSettingsFormFields() {
-            const currentConfigObj = JSON.parse(localStorage.getItem('tb_settings')) || {
-                theme: 'system',
-                fontSize: '16px',
-                fontFamily: 'sans'
-            };
-
-            document.getElementById('settingThemeSelect').value = currentConfigObj.theme;
-            document.getElementById('settingSizeSelect').value = currentConfigObj.fontSize;
-            document.getElementById('settingFontSelect').value = currentConfigObj.fontFamily;
-            
-            // Invoke live framework execution loop context state matching directly safely
-            applyThemeSettings(currentConfigObj.theme);
-            applyFontSettings(currentConfigObj.fontSize, currentConfigObj.fontFamily);
-        }
-
-        function processSettingsChange() {
-            const updatedConfigPayload = {
-                theme: document.getElementById('settingThemeSelect').value,
-                fontSize: document.getElementById('settingSizeSelect').value,
-                fontFamily: document.getElementById('settingFontSelect').value
-            };
-
-            localStorage.setItem('tb_settings', JSON.stringify(updatedConfigPayload));
-            
-            // Propagate visual styling configurations transformations live adjustments safely across target windows frames instances
-            applyThemeSettings(updatedConfigPayload.theme);
-            applyFontSettings(updatedConfigPayload.fontSize, updatedConfigPayload.fontFamily);
-        }
-
-        function triggerFactoryResetPipeline() {
-            if(confirm('உறுதியாக அனைத்து சேமிக்கப்பட்ட தரவுகள், வரலாறு மற்றும் அமைப்புகளையும் நீக்க வேண்டுமா? இந்தச் செயலை மாற்றியமைக்க முடியாது.')) {
-                localStorage.clear();
-                alert('பயன்பாடு வெற்றிகரமாக மீட்டமைக்கப்பட்டது!');
-                location.href = 'index.html';
-            }
-        }
-    </script>
+    <script src="app.js"></script>
+</body>
+    </html>
 </body>
 </html>
