@@ -6,12 +6,15 @@
 // Global State management variables
 let currentBookCacheData = null;
 
-// Dynamic Path Builder Selector for individual files
+// Dynamic Path Builder Selector for individual files with GitHub Pages support
 function getBookFilePath(bookId) {
-    // 'books/bible.json/Genesis.json' என்பதில் இருந்து 'books/Genesis.json' ஆக மாற்றப்பட்டுள்ளது
     const matchedMeta = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === bookId.toLowerCase());
     const exactFileName = matchedMeta ? matchedMeta.id : bookId;
-    return `books/${exactFileName}.json`;
+    
+    // இது தற்போதைய பிரவுசர் முகவரியை (எ.கா: https://umn-ministry.github.io/Bible/) துல்லியமாக எடுத்துக்கொள்ளும்
+    const currentAbsoluteURL = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '');
+    
+    return `${currentAbsoluteURL}books/${exactFileName}.json`;
 }
 
 // Persistent LocalStorage keys for history tracking and indexing
