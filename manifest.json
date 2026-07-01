@@ -1,24 +1,53 @@
 {
-  "short_name": "பைபிள்",
-  "name": "தமிழ் பைபிள் ரீடர் - Tamil Bible Reader",
-  "description": "அனைத்து 66 புத்தகங்களையும் எளிதாக வாசிக்க, தேட மற்றும் தியானிக்க ஒரு நவீன தமிழ் பைபிள் செயலி.",
+  "short_name": "தமிழ் பைபிள்",
+  "name": "பரிசுத்த வேதாகமம் - தமிழ் பைபிள் வாசகர்",
+  "description": "முழுமையான தமிழ் வேதாகமச் செயலி - அதிவேகத் தேடல் மற்றும் ஆஃப்லைன் வசதியுடன்",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",
+      "src": "icons/icon-192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
-      "src": "icons/icon-512x512.png",
+      "src": "icons/icon-192-maskable.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": "index.html",
-  "background_color": "#121212",
-  "theme_color": "#1a73e8",
+  "background_color": "#FEF7FF",
+  "theme_color": "#6750A4",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "categories": ["books", "education"]
+  "categories": ["books", "education", "utilities"],
+  "shortcuts": [
+    {
+      "name": "வாசிக்க (Read)",
+      "short_name": "வாசிக்க",
+      "description": "வேதாகமப் புத்தகங்களை வாசிக்க",
+      "url": "reader.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "தேடல் (Search)",
+      "short_name": "தேடல்",
+      "description": "வசனங்களைத் தேட",
+      "url": "search.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }
