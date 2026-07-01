@@ -1,74 +1,98 @@
 /**
- * Tamil Bible Reader - Progressive Web Application (PWA) Offline Engine Core Service Worker
- * Implements high-speed cache performance mechanics and offline execution reliability fallback layers
+ * Tamil Bible Reader PWA - Service Worker Engine (Cache-First Strategy)
+ * Synchronizes offline access for static structural documents and the main JSON payload.
  */
 
-const CACHE_NAME_VERSIONED_KEY = 'tb-reader-v1.2.0';
-const APPLICATION_ASSETS_CRITICAL_MANIFEST_LIST = [
-  'index.html',
-  'reader.html',
-  'chapter.html',
-  'search.html',
-  'favorites.html',
-  'settings.html',
-  'about.html',
-  'style.css',
-  'app.js',
-  'books.js',
-  'settings.js',
-  'manifest.json'
+const CACHE_NAME = 'tamil-bible-pwa-v1';
+
+// Comprehensive listing of application assets required for standalone offline rendering
+const OFFLINE_ASSETS = [
+    './',
+    './index.html',
+    './reader.html',
+    './chapter.html',
+    './search.html',
+    './favorites.html',
+    './settings.html',
+    './css/style.css',
+    './js/books.js',
+    './js/settings.js',
+    './js/app.js',
+    './manifest.json',
+    './books/bible.json',
+    './icons/icon-192.png',
+    './icons/icon-192-maskable.png',
+    './icons/icon-512.png',
+    './icons/icon-512-maskable.png'
 ];
 
-// Installation Lifecycle Event Event Pipeline Stage Hook Implementation
+/**
+ * Installation Event - Pre-caches all essential user-interface shells and data payloads.
+ */
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME_VERSIONED_KEY).then((cache) => {
-      // Complete initial buffering fetch of all base layouts templates elements modules frameworks static packages files
-      return cache.addAll(APPLICATION_ASSETS_CRITICAL_MANIFEST_LIST);
-    }).then(() => self.skipWaiting())
-  );
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('Offline assets compilation caching initialized successfully.');
+                return cache.addAll(OFFLINE_ASSETS);
+            })
+            .then(() => self.skipWaiting())
+    );
 });
 
-// Activation Engine Storage Cleansing Clean Lifecycle Transition Stage Strategy Logic Map Execution Pipeline
+/**
+ * Activation Event - Performs clean-up operations removing stale data cache frameworks.
+ */
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNamesArray) => {
-      return Promise.all(
-        cacheNamesArray.map((cacheName) => {
-          if (cacheName !== CACHE_NAME_VERSIONED_KEY) {
-            // Safely invalidate deprecated legacy operational caches context targets data frames
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cache) => {
+                    if (cache !== CACHE_NAME) {
+                        console.log('Purging legacy service worker cache stream index:', cache);
+                        return caches.delete(cache);
+                    }
+                })
+            );
+        }).then(() => self.clients.claim())
+    );
 });
 
-// Network Interception Proxy Optimization Pipeline Processing Routing Strategy Loop Frame Target Control Rule
+/**
+ * Intercepted Fetch Engine Pipeline - Implements high-performance Cache-First strategy
+ * optimized specifically for instantly serving heavy immutable localized translation assets.
+ */
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponseMatch) => {
-      if (cachedResponseMatch) {
-        return cachedResponseMatch;
-      }
-      
-      // Dynamic network streaming lookup processing pipeline catch fallback structure engine
-      return fetch(event.request).then((networkResponseInstance) => {
-        if (!networkResponseInstance || networkResponseInstance.status !== 200 || networkResponseInstance.type !== 'basic') {
-          return networkResponseInstance;
-        }
+    // Restrict processing parameters exclusively to native GET data channels
+    if (event.request.method !== 'GET') return;
 
-        // Cache dynamically matched resources on-the-fly (e.g., dynamically accessed book JSON files)
-        const responseCloneBufferSpace = networkResponseInstance.clone();
-        caches.open(CACHE_NAME_VERSIONED_KEY).then((cache) => {
-          cache.put(event.request, responseCloneBufferSpace);
-        });
+    event.respondWith(
+        caches.match(event.request)
+            .then((cachedResponse) => {
+                if (cachedResponse) {
+                    // Trigger asynchronous background service revalidation network check
+                    fetch(event.request).then((networkResponse) => {
+                        if (networkResponse && networkResponse.status === 200) {
+                            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+                        }
+                    }).catch(() => { /* Swallowing offline network capture baseline errors cleanly */ });
+                    
+                    return cachedResponse;
+                }
 
-        return networkResponseInstance;
-      }).catch(() => {
-        // Safe execution recovery fallback points boundaries error handlers
-      });
-    })
-  );
+                // Fallback architecture pipeline path routines
+                return fetch(event.request).then((networkResponse) => {
+                    if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                        return networkResponse;
+                    }
+                    
+                    const responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
+                    
+                    return networkResponse;
+                });
+            })
+    );
 });
