@@ -1,5 +1,5 @@
 /**
- * Tamil Bible Reader PWA - Core Application Engine
+ * Tamil Bible Reader PWA - Core Application Engine (Optimized for GitHub Schema)
  * Handles dynamic data loading from a single unified JSON source, page routing,
  * asynchronous state updates, search orchestration, and persistent caching.
  */
@@ -94,35 +94,35 @@ async function initDashboardView() {
     
     // 1. Generate Deterministic Pseudo-Random Daily Verse based on Date Stamp
     const data = await fetchCompleteBibleJSON();
-    if (data && data.Book) {
+    if (data && data.book) {
         const today = new Date();
         const daySeed = today.getDate() + today.getMonth() * 31 + today.getFullYear();
         
         // Pick random indices safely constrained to structure limits
-        const bookIndex = daySeed % data.Book.length;
-        const targetBook = data.Book[bookIndex];
-        const chapterIndex = daySeed % targetBook.Chapter.length;
-        const targetChap = targetBook.Chapter[chapterIndex];
-        const verseIndex = daySeed % targetChap.Verse.length;
-        const targetVerse = targetChap.Verse[verseIndex];
+        const bookIndex = daySeed % data.book.length;
+        const targetBook = data.book[bookIndex];
+        const chapterIndex = daySeed % targetBook.chapter.length;
+        const targetChap = targetBook.chapter[chapterIndex];
+        const verseIndex = daySeed % targetChap.verse.length;
+        const targetVerse = targetChap.verse[verseIndex];
         
-        const metaBook = BIBLE_BOOKS_METADATA.find(b => b.id === targetBook.BookName);
-        const displayBookName = metaBook ? metaBook.ta : targetBook.BookName;
+        const metaBook = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === targetBook.book_name.toLowerCase());
+        const displayBookName = metaBook ? metaBook.ta : targetBook.book_name;
         
         if (dailyText && dailyRef) {
-            dailyText.textContent = targetVerse.Verse;
-            dailyRef.textContent = `— ${displayBookName} ${targetChap.ChapterNumber}:${targetVerse.VerseNumber}`;
+            dailyText.textContent = targetVerse.verse;
+            dailyRef.textContent = `— ${displayBookName} ${targetChap.chapter_number}:${targetVerse.verse_number}`;
         }
         
         if (readDailyBtn) {
             readDailyBtn.addEventListener('click', () => {
-                window.location.href = `chapter.html?book=${targetBook.BookName}&chapter=${targetChap.ChapterNumber}`;
+                window.location.href = `chapter.html?book=${targetBook.book_name}&chapter=${targetChap.chapter_number}`;
             });
         }
         
         if (shareDailyBtn) {
             shareDailyBtn.addEventListener('click', () => {
-                const shareStr = `"${targetVerse.Verse}" — ${displayBookName} ${targetChap.ChapterNumber}:${targetVerse.VerseNumber}`;
+                const shareStr = `"${targetVerse.verse}" — ${displayBookName} ${targetChap.chapter_number}:${targetVerse.verse_number}`;
                 navigator.share ? navigator.share({ text: shareStr }) : navigator.clipboard.writeText(shareStr);
             });
         }
@@ -134,7 +134,7 @@ async function initDashboardView() {
     const resumeBtn = document.getElementById('resumeReadingBtn');
     
     if (history && lastReadTitle && resumeBtn) {
-        const meta = BIBLE_BOOKS_METADATA.find(b => b.id === history.bookId);
+        const meta = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === history.bookId.toLowerCase());
         lastReadTitle.textContent = `${meta ? meta.ta : history.bookId} : அதிகாரம் ${history.chapter}`;
         resumeBtn.style.display = 'inline-flex';
         resumeBtn.href = `chapter.html?book=${history.bookId}&chapter=${history.chapter}`;
@@ -265,15 +265,15 @@ async function initChapterPresentationView() {
     const data = await fetchCompleteBibleJSON();
     if (!data) return;
 
-    // Use required bibleBooksData array mapping indexes matching configurations
-    const bookIndex = data.Book.findIndex(b => b.BookName.toLowerCase() === bookId.toLowerCase());
+    // Fixed for lowercase "book" and "book_name" schema
+    const bookIndex = data.book.findIndex(b => b.book_name.toLowerCase() === bookId.toLowerCase());
     if (bookIndex === -1) {
         console.error('Target identifier mismatch context handling error logic failure.');
         return;
     }
 
-    const matchedBookPayload = data.Book[bookIndex];
-    const targetChapterPayload = matchedBookPayload.Chapter.find(c => c.ChapterNumber === chapterNum);
+    const matchedBookPayload = data.book[bookIndex];
+    const targetChapterPayload = matchedBookPayload.chapter.find(c => c.chapter_number === chapterNum);
     
     if (!targetChapterPayload) return;
 
@@ -285,14 +285,14 @@ async function initChapterPresentationView() {
     if (renderGrid) {
         renderGrid.innerHTML = '';
         
-        targetChapterPayload.Verse.forEach((v) => {
+        targetChapterPayload.verse.forEach((v) => {
             const rowNode = document.createElement('div');
             rowNode.className = 'verse-item tamil-text';
-            rowNode.setAttribute('data-verse-number', v.VerseNumber);
-            rowNode.innerHTML = `<span class="verse-num">${v.VerseNumber}</span><span class="verse-text-body">${v.Verse}</span>`;
+            rowNode.setAttribute('data-verse-number', v.verse_number);
+            rowNode.innerHTML = `<span class="verse-num">${v.verse_number}</span><span class="verse-text-body">${v.verse}</span>`;
             
             // Add interaction selection contextual tracking modules
-            rowNode.addEventListener('click', () => handleVerseSelectionToggle(rowNode, metaBook, chapterNum, v));
+            rowNode.addEventListener('click', () => handleVerseSelectionToggle(rowNode, metaBook, chapterNum, { Verse: v.verse, VerseNumber: v.verse_number }));
             renderGrid.appendChild(rowNode);
         });
     }
@@ -319,7 +319,6 @@ function handleVerseSelectionToggle(rowNode, metaBook, chapterNum, verseObj) {
     if (rowNode.classList.contains('selected')) {
         selectedVersesSet.add({ key: verseKey, text: verseObj.Verse, num: verseObj.VerseNumber, refStr: `${metaBook.ta} ${chapterNum}:${verseObj.VerseNumber}` });
     } else {
-        // Linear structural matching optimization logic array removal operation
         selectedVersesSet.forEach(item => { if (item.key === verseKey) selectedVersesSet.delete(item); });
     }
 
@@ -328,7 +327,6 @@ function handleVerseSelectionToggle(rowNode, metaBook, chapterNum, verseObj) {
         toast.classList.add('toast-visible');
         toast.setAttribute('aria-hidden', 'false');
         
-        // Sync context state for favorite styling checks safely
         let favoritesList = JSON.parse(localStorage.getItem(STORAGE_KEYS.FAVORITES)) || [];
         const singleSelection = Array.from(selectedVersesSet)[0];
         const isAlreadySaved = favoritesList.some(f => f.key === singleSelection.key);
@@ -353,7 +351,6 @@ function resetSelectionToastState() {
 function configureToastActionBindings(selectedArray) {
     document.getElementById('clearSelectionBtn').onclick = () => resetSelectionToastState();
     
-    // Bulk compilation string extraction format template engines
     const compiledText = selectedArray.map(v => `[${v.num}] ${v.text}`).join('\n');
     const compiledRef = selectedArray[0].refStr.split(':')[0] + ':' + selectedArray.map(v => v.num).join(',');
 
@@ -376,7 +373,7 @@ function configureToastActionBindings(selectedArray) {
             if (existsIndex === -1) {
                 currentFavs.push({ key: v.key, text: v.text, reference: v.refStr, added: Date.now() });
             } else {
-                currentFavs.splice(existsIndex, 1); // Toggle inverse off state mapping
+                currentFavs.splice(existsIndex, 1);
             }
         });
         
@@ -417,7 +414,6 @@ function initChapterConfigOverlays() {
         modePara.onclick = () => { modePara.classList.add('active'); modeVerse.classList.remove('active'); setReadingModePreference('para'); };
     }
 
-    // Scroll mapping layout configurations updates registration hook
     const container = document.getElementById('versesContainer');
     if (container) {
         container.addEventListener('scroll', () => {
@@ -446,26 +442,26 @@ function setupPaginationFlowControls(currentBookIndex, currentChapter, fullPaylo
     if (!navBar || !prevBtn || !nextBtn) return;
     navBar.style.display = 'flex';
 
-    const currentBookObj = fullPayload.Book[currentBookIndex];
-    const totalChaptersInBook = currentBookObj.Chapter.length;
+    const currentBookObj = fullPayload.book[currentBookIndex];
+    const totalChaptersInBook = currentBookObj.chapter.length;
 
-    // Previous Button Mapping Sequence Logic Loop
+    // Previous Chapter Routing (Optimized for lowercase schemas)
     if (currentChapter > 1) {
-        prevBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookObj.BookName}&chapter=${currentChapter - 1}`;
+        prevBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookObj.book_name}&chapter=${currentChapter - 1}`;
     } else if (currentBookIndex > 0) {
-        const prevBookObj = fullPayload.Book[currentBookIndex - 1];
-        const lastChapOfPrevBook = prevBookObj.Chapter.length;
-        prevBtn.onclick = () => window.location.href = `chapter.html?book=${prevBookObj.BookName}&chapter=${lastChapOfPrevBook}`;
+        const prevBookObj = fullPayload.book[currentBookIndex - 1];
+        const lastChapOfPrevBook = prevBookObj.chapter.length;
+        prevBtn.onclick = () => window.location.href = `chapter.html?book=${prevBookObj.book_name}&chapter=${lastChapOfPrevBook}`;
     } else {
         prevBtn.disabled = true;
     }
 
-    // Next Button Mapping Sequence Logic Loop
+    // Next Chapter Routing (Optimized for lowercase schemas)
     if (currentChapter < totalChaptersInBook) {
-        nextBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookObj.BookName}&chapter=${currentChapter + 1}`;
-    } else if (currentBookIndex < fullPayload.Book.length - 1) {
-        const nextBookObj = fullPayload.Book[currentBookIndex + 1];
-        nextBtn.onclick = () => window.location.href = `chapter.html?book=${nextBookObj.BookName}&chapter=1`;
+        nextBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookObj.book_name}&chapter=${currentChapter + 1}`;
+    } else if (currentBookIndex < fullPayload.book.length - 1) {
+        const nextBookObj = fullPayload.book[currentBookIndex + 1];
+        nextBtn.onclick = () => window.location.href = `chapter.html?book=${nextBookObj.book_name}&chapter=1`;
     } else {
         nextBtn.disabled = true;
     }
@@ -485,7 +481,6 @@ async function initSearchEngineView() {
     const loader = document.getElementById('searchLoader');
     const clearBtn = document.getElementById('clearSearchBtn');
 
-    // Load available configurations targeting selector fields instantly
     BIBLE_BOOKS_METADATA.forEach(b => {
         const opt = document.createElement('option');
         opt.value = b.id;
@@ -536,26 +531,26 @@ async function initSearchEngineView() {
         const targetChapFilter = chapSelect.value;
         let matchedMatchesAccumulator = [];
 
-        data.Book.forEach((bPayload) => {
-            if (targetBookFilter !== 'ALL' && bPayload.BookName !== targetBookFilter) return;
+        // Fixed lowercase schema parsing for Global Lookups
+        data.book.forEach((bPayload) => {
+            if (targetBookFilter !== 'ALL' && bPayload.book_name.toLowerCase() !== targetBookFilter.toLowerCase()) return;
             
-            bPayload.Chapter.forEach((cPayload) => {
-                if (targetChapFilter !== 'ALL' && cPayload.ChapterNumber.toString() !== targetChapFilter) return;
+            bPayload.chapter.forEach((cPayload) => {
+                if (targetChapFilter !== 'ALL' && cPayload.chapter_number.toString() !== targetChapFilter) return;
                 
-                cPayload.Verse.forEach((vPayload) => {
-                    if (vPayload.Verse.toLowerCase().includes(query)) {
+                cPayload.verse.forEach((vPayload) => {
+                    if (vPayload.verse.toLowerCase().includes(query)) {
                         matchedMatchesAccumulator.push({
-                            bookId: bPayload.BookName,
-                            chapter: cPayload.ChapterNumber,
-                            verse: vPayload.VerseNumber,
-                            text: vPayload.Verse
+                            bookId: bPayload.book_name,
+                            chapter: cPayload.chapter_number,
+                            verse: vPayload.verse_number,
+                            text: vPayload.verse
                         });
                     }
                 });
             });
         });
 
-        // Inject dynamic compilation list rows mapping elements layout references
         loader.style.display = 'none';
         summaryBar.style.display = 'block';
         countText.textContent = `${matchedMatchesAccumulator.length} தேடல் முடிவுகள் கண்டறியப்பட்டுள்ளன.`;
@@ -563,9 +558,8 @@ async function initSearchEngineView() {
         matchedMatchesAccumulator.forEach(m => {
             const row = document.createElement('div');
             row.className = 'card search-result-item animate-fade-in';
-            const metaMeta = BIBLE_BOOKS_METADATA.find(b => b.id === m.bookId);
+            const metaMeta = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === m.bookId.toLowerCase());
             
-            // Text highlighting regex mapping engine substitution
             const regex = new RegExp(`(${query})`, 'gi');
             const highlightedText = m.text.replace(regex, `<span class="highlight">$1</span>`);
 
@@ -582,7 +576,6 @@ async function initSearchEngineView() {
         });
     };
 
-    // Debounce implementation wrappers orchestration for heavy text lookups
     let debounceTimer;
     function triggerSearchPipeline() {
         clearTimeout(debounceTimer);
@@ -631,13 +624,11 @@ function initFavoritesListView() {
                     </div>
                 `;
                 
-                // Clicking target content jumps straight to contextual location coordinates
                 card.addEventListener('click', (e) => {
                     const token = f.key.split('_');
                     window.location.href = `chapter.html?book=${token[0]}&chapter=${token[1]}`;
                 });
 
-                // Trapping context bubble processing execution loops on buttons structural rows
                 card.querySelector('.mini-delete-btn').addEventListener('click', (e) => {
                     e.stopPropagation();
                     let list = JSON.parse(localStorage.getItem(STORAGE_KEYS.FAVORITES)) || [];
