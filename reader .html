@@ -1,138 +1,150 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="ta" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>அதிகாரங்கள் | Tamil Bible Reader</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <title>வேதாகமப் புத்தகங்கள் (Bible Books) - தமிழ் பைபிள்</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
+    <!-- Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="app-bar">
-        <div class="app-bar-container">
-            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
-                <span class="material-icons-round">arrow_back</span>
-            </button>
-            <h1 id="bookReaderTitle" class="app-title">புத்தகம்</h1>
-            <button id="favBookBtn" class="btn-icon" title="புத்தகத்தை சேமி">
-                <span class="material-icons-round">bookmark_border</span>
-            </button>
-        </div>
+    <!-- Top App Bar -->
+    <header class="top-app-bar">
+        <button class="icon-button" id="menuBtn" aria-label="Menu">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h1 class="app-title">வேதாகமப் புத்தகங்கள்</h1>
+        <button class="icon-button" id="themeToggleBtn" aria-label="Toggle Theme">
+            <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+        </button>
     </header>
 
-    <div style="height: 4px; width: 100%; background-color: var(--surface-variant);">
-        <div id="readingProgressBar" style="height: 100%; width: 0%; background-color: var(--primary); transition: width 0.3s;"></div>
-    </div>
+    <!-- Navigation Drawer -->
+    <aside class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <h2>பரிசுத்த வேதாகமம்</h2>
+            <p>Tamil Bible PWA</p>
+        </div>
+        <nav class="drawer-nav">
+            <a href="index.html" class="nav-link">
+                <span class="material-symbols-outlined">home</span>
+                <span>முகப்பு (Home)</span>
+            </a>
+            <a href="reader.html" class="nav-link active">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span>வாசிக்க (Read)</span>
+            </a>
+            <a href="search.html" class="nav-link">
+                <span class="material-symbols-outlined">search</span>
+                <span>தேடல் (Search)</span>
+            </a>
+            <a href="favorites.html" class="nav-link">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span>பிடித்தவை (Favorites)</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="material-symbols-outlined">settings</span>
+                <span>அமைப்புகள் (Settings)</span>
+            </a>
+            <a href="about.html" class="nav-link">
+                <span class="material-symbols-outlined">info</span>
+                <span>பற்றி (About)</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="scrim" id="scrim"></div>
 
+    <!-- Main Container -->
     <main class="main-container">
         
-        <div class="card">
-            <div class="reader-nav-row">
-                <button id="prevBookBtn" class="btn-text"><span class="material-icons-round">chevron_left</span> முந்தைய</button>
-                <span class="reader-title">அதிகாரத்தைத் தேர்வுசெய்க</span>
-                <button id="nextBookBtn" class="btn-text">அடுத்தது <span class="material-icons-round">chevron_right</span></button>
-            </div>
+        <!-- Segmented Control Filters for Testaments -->
+        <div class="segmented-control" role="tablist">
+            <button class="segment-btn active" id="tabOT" role="tab" aria-selected="true" data-target="otSection">
+                பழைய ஏற்பாடு (OT)
+            </button>
+            <button class="segment-btn" id="tabNT" role="tab" aria-selected="false" data-target="ntSection">
+                புதிய ஏற்பாடு (NT)
+            </button>
         </div>
 
-        <section class="card">
-            <div id="chaptersGrid" class="chapters-grid">
-                </div>
+        <!-- Old Testament Books Layout Container -->
+        <section id="otSection" class="testament-section list-container active-section">
+            <h2 class="section-heading-hidden">பழைய ஏற்பாடு</h2>
+            <div class="books-grid" id="otGrid">
+                <!-- Dynamically populated via reader module logic -->
+            </div>
+        </section>
+
+        <!-- New Testament Books Layout Container -->
+        <section id="ntSection" class="testament-section list-container hidden-section">
+            <h2 class="section-heading-hidden">புதிய ஏற்பாடு</h2>
+            <div class="books-grid" id="ntGrid">
+                <!-- Dynamically populated via reader module logic -->
+            </div>
         </section>
 
     </main>
 
+    <!-- Chapter Selection Bottom Sheet Modal Layout -->
+    <div class="bottom-sheet" id="chapterSheet" aria-hidden="true">
+        <div class="bottom-sheet-scrim" id="sheetScrim"></div>
+        <div class="bottom-sheet-content">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-header">
+                <h3 id="sheetBookTitle" class="tamil-text">புத்தகம்</h3>
+                <button class="icon-button" id="closeSheetBtn" aria-label="Close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="bottom-sheet-body">
+                <p class="sheet-instruction">அதிகாரத்தைத் தேர்ந்தெடுக்கவும் (Select Chapter):</p>
+                <div class="chapters-grid" id="sheetChaptersGrid">
+                    <!-- Dynamically injected numbers -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (Mobile Viewport Sync) -->
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item">
-            <span class="material-icons-round">home</span>
-            <span class="nav-label">முகப்பு</span>
+        <a href="index.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">home</span>
+            <span class="bottom-nav-label">முகப்பு</span>
         </a>
-        <a href="search.html" class="nav-item">
-            <span class="material-icons-round">search</span>
-            <span class="nav-label">தேடல்</span>
+        <a href="reader.html" class="bottom-nav-link active">
+            <span class="material-symbols-outlined">auto_stories</span>
+            <span class="bottom-nav-label">வாசிக்க</span>
         </a>
-        <a href="favorites.html" class="nav-item">
-            <span class="material-icons-round">bookmark</span>
-            <span class="nav-label">சேமித்தவை</span>
+        <a href="search.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">search</span>
+            <span class="bottom-nav-label">தேடல்</span>
         </a>
-        <a href="about.html" class="nav-item">
-            <span class="material-icons-round">info</span>
-            <span class="nav-label">செயலி</span>
+        <a href="favorites.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">bookmark</span>
+            <span class="bottom-nav-label">பிடித்தவை</span>
+        </a>
+        <a href="settings.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="bottom-nav-label">அமைப்புகள்</span>
         </a>
     </nav>
 
+    <!-- Script assets parsed sequentially -->
     <script src="books.js"></script>
     <script src="settings.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme(); // Located inside settings configuration tracker system
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const bookId = urlParams.get('book') || 'Genesis';
-            
-            const bookIndex = bibleBooksData.findIndex(b => b.id === bookId);
-            if(bookIndex === -1) return;
-            
-            const currentBook = bibleBooksData[bookIndex];
-            
-            // Set Titles Texts Definitions
-            document.getElementById('bookReaderTitle').innerText = currentBook.ta;
-            
-            // Draw Target Interface Map Matrix System Elements Blocks
-            const grid = document.getElementById('chaptersGrid');
-            for(let c = 1; c <= currentBook.chapters; c++) {
-                const btn = document.createElement('button');
-                btn.className = 'chapter-btn';
-                btn.innerText = c;
-                btn.onclick = () => {
-                    location.href = `chapter.html?book=${encodeURIComponent(bookId)}&chapter=${c}`;
-                };
-                grid.appendChild(btn);
-            }
-            
-            // Compute Context Progress Metric Setup Parameters UI indicators structures logic
-            const progress = ((bookIndex + 1) / bibleBooksData.length) * 100;
-            document.getElementById('readingProgressBar').style.width = `${progress}%`;
-            
-            // Process Navigation Rules Pipelines Bindings Buttons Targets
-            const prevBtn = document.getElementById('prevBookBtn');
-            const nextBtn = document.getElementById('nextBookBtn');
-            
-            if(bookIndex > 0) {
-                prevBtn.onclick = () => location.href = `reader.html?book=${encodeURIComponent(bibleBooksData[bookIndex-1].id)}`;
-            } else {
-                prevBtn.style.visibility = 'hidden';
-            }
-            
-            if(bookIndex < bibleBooksData.length - 1) {
-                nextBtn.onclick = () => location.href = `reader.html?book=${encodeURIComponent(bibleBooksData[bookIndex+1].id)}`;
-            } else {
-                nextBtn.style.visibility = 'hidden';
-            }
-            
-            // Handle Favoriting System Features Configurations Hooks LocalStorage Matrix Trackers
-            const favBtn = document.getElementById('favBookBtn');
-            let savedBooks = JSON.parse(localStorage.getItem('tb_fav_books')) || [];
-            
-            if(savedBooks.includes(bookId)) {
-                favBtn.querySelector('.material-icons-round').innerText = 'bookmark';
-                favBtn.style.color = 'var(--primary)';
-            }
-            
-            favBtn.onclick = () => {
-                savedBooks = JSON.parse(localStorage.getItem('tb_fav_books')) || [];
-                if(savedBooks.includes(bookId)) {
-                    savedBooks = savedBooks.filter(id => id !== bookId);
-                    favBtn.querySelector('.material-icons-round').innerText = 'bookmark_border';
-                    favBtn.style.color = 'inherit';
-                } else {
-                    savedBooks.push(bookId);
-                    favBtn.querySelector('.material-icons-round').innerText = 'bookmark';
-                    favBtn.style.color = 'var(--primary)';
-                }
-                localStorage.setItem('tb_fav_books', JSON.stringify(savedBooks));
-            };
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
