@@ -6,15 +6,15 @@
 // Global State management variables
 let currentBookCacheData = null;
 
-// Dynamic Path Builder Selector for individual files with GitHub Pages support
 function getBookFilePath(bookId) {
     const matchedMeta = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === bookId.toLowerCase());
     const exactFileName = matchedMeta ? matchedMeta.id : bookId;
     
-    // இது தற்போதைய பிரவுசர் முகவரியை (எ.கா: https://umn-ministry.github.io/Bible/) துல்லியமாக எடுத்துக்கொள்ளும்
+    // தற்போதைய பக்கத்தின் முகவரிப் பாதையைச் சரியாகப் பிரித்தெடுக்கிறது
     const currentAbsoluteURL = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '');
     
-    return `${currentAbsoluteURL}books/${exactFileName}.json`;
+    // இறுதிப் பாதையில் சாய்வுக்கோடு (/) துல்லியமாக இணைக்கப்பட்டுள்ளது
+    return `${currentAbsoluteURL.replace(/\/$/, '')}/books/${exactFileName}.json`;
 }
 
 // Persistent LocalStorage keys for history tracking and indexing
