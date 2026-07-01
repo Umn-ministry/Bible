@@ -1,85 +1,176 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="ta" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>செயலி பற்றி | Tamil Bible Reader</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <title>பற்றி (About) - தமிழ் பைபிள்</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
+    <!-- Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="app-bar">
-        <div class="app-bar-container">
-            <button onclick="location.href='index.html'" class="btn-icon" aria-label="Back">
-                <span class="material-icons-round">arrow_back</span>
-            </button>
-            <h1 class="app-title">செயலித் தகவல்</h1>
-            <div style="width:40px;"></div>
-        </div>
+    <!-- Top App Bar -->
+    <header class="top-app-bar">
+        <button class="icon-button" id="menuBtn" aria-label="Menu">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h1 class="app-title">செயலியைப் பற்றி</h1>
+        <button class="icon-button" id="themeToggleBtn" aria-label="Toggle Theme">
+            <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+        </button>
     </header>
 
-    <main class="main-container">
-        
-        <section class="card" style="text-align: center; padding: 24px 16px;">
-            <div style="width: 80px; height: 80px; background-color: var(--accent); color: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; box-shadow: var(--shadow);">
-                <span class="material-icons-round" style="font-size: 48px;">auto_stories</span>
+    <!-- Navigation Drawer -->
+    <aside class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <h2>பரிசுத்த வேதாகமம்</h2>
+            <p>Tamil Bible PWA</p>
+        </div>
+        <nav class="drawer-nav">
+            <a href="index.html" class="nav-link">
+                <span class="material-symbols-outlined">home</span>
+                <span>முகப்பு (Home)</span>
+            </a>
+            <a href="reader.html" class="nav-link">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span>வாசிக்க (Read)</span>
+            </a>
+            <a href="search.html" class="nav-link">
+                <span class="material-symbols-outlined">search</span>
+                <span>தேடல் (Search)</span>
+            </a>
+            <a href="favorites.html" class="nav-link">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span>பிடித்தவை (Favorites)</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="material-symbols-outlined">settings</span>
+                <span>அமைப்புகள் (Settings)</span>
+            </a>
+            <a href="about.html" class="nav-link active">
+                <span class="material-symbols-outlined">info</span>
+                <span>பற்றி (About)</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <!-- Main Content Container -->
+    <main class="main-container Layout-Centered-Constrained">
+
+        <!-- App Branding Block -->
+        <section class="about-branding-hero animate-fade-in">
+            <div class="app-large-logo-avatar">
+                <span class="material-symbols-outlined">auto_stories</span>
             </div>
-            <h2 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 4px;">தமிழ் பைபிள் ரீடர்</h2>
-            <p class="empty-text" style="font-weight: 500; margin-bottom: 12px;">Tamil Bible Reader App</p>
-            <div class="card-badge">பதிப்பு 1.2.0 (Production Ready)</div>
+            <h2 class="tamil-text app-dev-title">தமிழ் பைபிள் வாசகர்</h2>
+            <p class="app-version-tag">பதிப்பு (Version) 1.0.0 — 2026</p>
         </section>
 
-        <section class="card">
-            <div class="settings-label">அம்சங்கள் மற்றும் சிறப்புகள் (Key Features)</div>
-            <ul style="padding-left: 20px; margin-top: 8px; font-size: 0.95rem; line-height: 1.8;">
-                <li><b>முழுமையான ஆஃப்லைன் வசதி:</b> ஒருமுறை பதிவிறக்கிய பின் இணையம் இன்றியே முற்றிலும் இயங்கும் திறனுள்ளது.</li>
-                <li><b>நவீன தேடுபொறி:</b> அனைத்து 66 புத்தகங்களிலும் மிகக் குறுகிய நொடிகளில் தேடி முடிவுகளைத் தரும் அதிவேக அமைப்பு.</li>
-                <li><b>விருப்பப் பலகை:</b> வசனங்களை பல வண்ணங்களில் அடிக்கோடிட்டுத் தனிப்பயனாக்கும் வசதி (Highlight System Engine).</li>
-                <li><b>எளிதான பகிர்வு:</b> ஒற்றைத் தொடுதலில் வசனங்களை நகலெடுத்து வாட்ஸ்அப் அல்லது சமூக வலைத்தளங்களில் பகிரலாம்.</li>
-            </ul>
-        </section>
+        <!-- Informational Cards Stack -->
+        <section class="about-info-stack">
+            
+            <!-- Description Card -->
+            <div class="card basic-info-card">
+                <div class="card-body">
+                    <p class="body-text-justified tamil-text">
+                        இந்தத் தமிழ் வேதாகமச் செயலி எவ்விதக் கூடுதல் கட்டணமுமின்றி, விளம்பரங்களின் தொல்லையின்றி, முற்றிலும் ஆஃப்லைனில் (Offline) வேலை செய்யக்கூடிய வகையில் பிரத்யேகமாக வடிவமைக்கப்பட்டுள்ளது. எளிய வடிவமைப்பு மற்றும் நவீன கூகுள் மெட்டீரியல் யூ 3 (Material Design 3) கொண்டு நேர்த்தியாக உருவாக்கப்பட்டுள்ளது.
+                    </p>
+                </div>
+            </div>
 
-        <section class="card">
-            <div class="settings-label">தனியுரிமைக் கொள்கை (Privacy Policy)</div>
-            <p style="font-size: 0.9rem; color: var(--on-surface); line-height: 1.6; margin-top: 6px;">
-                இந்தத் தமிழ் பைபிள் செயலி பயனர்களின் எந்தவொரு தனிப்பட்ட தரவுகளையோ அல்லது இருப்பிடத் தகவல்களையோ சேகரிப்பதோ, சேமிப்பதோ அல்லது பிற நிறுவனங்களுடன் பகிர்வதோ இல்லை. உங்களின் அனைத்துச் சேமிப்புகள், வாசிப்பு வரலாறு மற்றும் தனிப்பயனாக்கப்பட்ட தேர்வுகள் முற்றிலும் உங்களது சொந்த சாதனத்தின் தற்காலிக நினைவகத்தில் (LocalStorage) மட்டுமே பாதுகாப்பாகச் சேமிக்கப்படும்.
-            </p>
-        </section>
+            <!-- Key Architectural Features List -->
+            <div class="card features-info-card">
+                <div class="card-header">
+                    <span class="material-symbols-outlined text-primary">verified</span>
+                    <h3 class="card-title">செயலியின் சிறப்பம்சங்கள்</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="styled-features-list">
+                        <li>
+                            <span class="material-symbols-outlined list-icon-bullet">wifi_off</span>
+                            <div>
+                                <strong>முழு ஆஃப்லைன் வசதி:</strong> ஒருமுறை லோடான பின், இன்டர்நெட் இணைப்பு இல்லாமலேயே வேதாகமம் முழுவதையும் வாசிக்கலாம்.
+                            </div>
+                        </li>
+                        <li>
+                            <span class="material-symbols-outlined list-icon-bullet">bolt</span>
+                            <div>
+                                <strong>அதிவேகத் தேடல்:</strong> பைபிளின் 66 புத்தகங்களிலும் உள்ள வார்த்தைகள், சொற்றொடர்களை நொடிப் பொழுதில் தேடிக் கண்டறியலாம்.
+                            </div>
+                        </li>
+                        <li>
+                            <span class="material-symbols-outlined list-icon-bullet">smartphone</span>
+                            <div>
+                                <strong>PWA தொழில்நுட்பம்:</strong> உங்கள் மொபைல் அல்லது கணினியில் மிகக் குறைந்த நினைவகத்தில் (Low Storage) இன்ஸ்டால் செய்து பயன்படுத்தலாம்.
+                            </div>
+                        </li>
+                        <li>
+                            <span class="material-symbols-outlined list-icon-bullet">palette</span>
+                            <div>
+                                <strong>இரவு நேர வாசிப்பு (Dark Mode):</strong> கண்களுக்குப் பாதிப்பை ஏற்படுத்தாத இருண்ட நிற வடிவமைப்பு மற்றும் எழுத்து அளவு மாற்றும் வசதி.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
-        <section class="card" style="background-color: var(--surface-variant); border-style: dashed; text-align: center;">
-            <p style="font-size:0.85rem; color: var(--on-surface-muted);">
-                வடிவமைப்பு மற்றும் உருவாக்கம்: <b>D. Babu</b><br>
-                வளர்ச்சித் திட்டக் குழுமம் &copy; 2026 அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.
-            </p>
+            <!-- License and Usage info -->
+            <div class="card license-info-card">
+                <div class="card-header">
+                    <span class="material-symbols-outlined text-secondary">gavel</span>
+                    <h3 class="card-title">உரிமம் & காப்புரிமை</h3>
+                </div>
+                <div class="card-body">
+                    <p class="meta-caption-text tamil-text">
+                        இந்தச் செயலியில் பயன்படுத்தப்பட்டுள்ள தமிழ் வேதாகம உரை பொதுத்தளத்தில் (Public Domain) கிடைக்கக்கூடிய திருத்தப்பட்ட பதிப்பை அடிப்படையாகக் கொண்டது. இந்தச் செயலி முற்றிலும் திறந்த மூல நிரல் (Open Source) முறையில் அனைவருக்கும் இலவசமாகப் பகிர்ந்தளிக்கப்படுகிறது.
+                    </p>
+                </div>
+            </div>
+
         </section>
 
     </main>
 
+    <!-- Bottom Navigation Bar (Mobile View Sync) -->
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item">
-            <span class="material-icons-round">home</span>
-            <span class="nav-label">முகப்பு</span>
+        <a href="index.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">home</span>
+            <span class="bottom-nav-label">முகப்பு</span>
         </a>
-        <a href="search.html" class="nav-item">
-            <span class="material-icons-round">search</span>
-            <span class="nav-label">தேடல்</span>
+        <a href="reader.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">auto_stories</span>
+            <span class="bottom-nav-label">வாசிக்க</span>
         </a>
-        <a href="favorites.html" class="nav-item">
-            <span class="material-icons-round">bookmark</span>
-            <span class="nav-label">சேமித்தவை</span>
+        <a href="search.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">search</span>
+            <span class="bottom-nav-label">தேடல்</span>
         </a>
-        <a href="about.html" class="nav-item active">
-            <span class="material-icons-round">info</span>
-            <span class="nav-label">செயலி</span>
+        <a href="favorites.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">bookmark</span>
+            <span class="bottom-nav-label">பிடித்தவை</span>
+        </a>
+        <a href="settings.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="bottom-nav-label">அமைப்புகள்</span>
         </a>
     </nav>
 
+    <!-- Script assets parsed sequentially -->
+    <script src="books.js"></script>
     <script src="settings.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
-</html>
+    </html>
