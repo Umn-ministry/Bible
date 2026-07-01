@@ -1,12 +1,18 @@
 /**
- * Tamil Bible Reader PWA - Core Application Engine (Optimized for GitHub Schema)
- * Handles dynamic data loading from a single unified JSON source, page routing,
- * asynchronous state updates, search orchestration, and persistent caching.
+ * Tamil Bible Reader PWA - Core Application Engine (Multi-file JSON Version)
+ * Optimized for 66 individual book JSON files inside the 'books/bible.json/' folder.
  */
 
 // Global State management variables
-let cachedBibleData = null;
-const BIBLE_JSON_PATH = 'books/bible.json';
+let currentBookCacheData = null;
+
+// Dynamic Path Builder Selector for individual files
+function getBookFilePath(bookId) {
+    // Ensuring exact filename casing matching (e.g., 'books/bible.json/Genesis.json')
+    const matchedMeta = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === bookId.toLowerCase());
+    const exactFileName = matchedMeta ? matchedMeta.id : bookId;
+    return `books/bible.json/${exactFileName}.json`;
+}
 
 // Persistent LocalStorage keys for history tracking and indexing
 const STORAGE_KEYS = {
@@ -21,7 +27,6 @@ const STORAGE_KEYS = {
 document.addEventListener('DOMContentLoaded', () => {
     initGlobalUIComponents();
     
-    // Identify current active view segment context
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
     
     if (currentPath === 'index.html') {
@@ -48,7 +53,6 @@ function initGlobalUIComponents() {
     const scrim = document.getElementById('scrim');
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-    // Drawer toggling mechanism bindings
     if (menuBtn && navDrawer && scrim) {
         const toggleDrawer = () => {
             navDrawer.classList.toggle('open');
@@ -58,27 +62,23 @@ function initGlobalUIComponents() {
         scrim.addEventListener('click', toggleDrawer);
     }
 
-    // Theme toggle interaction listeners
     if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            toggleThemePreference();
-        });
+        themeToggleBtn.addEventListener('click', toggleThemePreference);
     }
 }
 
 /**
- * Singleton Pattern implementation wrapper for structural JSON payload isolation
- * Loads unified bible.json exactly once from cache or server network pipeline.
+ * Fetch targeting a SINGLE book JSON safely on-demand
  */
-async function fetchCompleteBibleJSON() {
-    if (cachedBibleData) return cachedBibleData;
+async function fetchSingleBookJSON(bookId) {
+    const path = getBookFilePath(bookId);
     try {
-        const response = await fetch(BIBLE_JSON_PATH);
-        if (!response.ok) throw new Error('Network error context processing failed.');
-        cachedBibleData = await response.json();
-        return cachedBibleData;
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`File not found: ${path}`);
+        currentBookCacheData = await response.json();
+        return currentBookCacheData;
     } catch (error) {
-        console.error('Fatal data initialization fault sequence:', error);
+        console.error('Fatal data fetch sequence failure:', error);
         return null;
     }
 }
@@ -92,43 +92,41 @@ async function initDashboardView() {
     const readDailyBtn = document.getElementById('readDailyBtn');
     const shareDailyBtn = document.getElementById('shareDailyBtn');
     
-    // 1. Generate Deterministic Pseudo-Random Daily Verse based on Date Stamp
-    const data = await fetchCompleteBibleJSON();
-    if (data && data.book) {
-        const today = new Date();
-        const daySeed = today.getDate() + today.getMonth() * 31 + today.getFullYear();
-        
-        // Pick random indices safely constrained to structure limits
-        const bookIndex = daySeed % data.book.length;
-        const targetBook = data.book[bookIndex];
-        const chapterIndex = daySeed % targetBook.chapter.length;
-        const targetChap = targetBook.chapter[chapterIndex];
+    // Pick deterministic daily book out of 66
+    const today = new Date();
+    const daySeed = today.getDate() + today.getMonth() * 31 + today.getFullYear();
+    
+    const bookIndex = daySeed % BIBLE_BOOKS_METADATA.length;
+    const selectedMetaBook = BIBLE_BOOKS_METADATA[bookIndex];
+    
+    const data = await fetchSingleBookJSON(selectedMetaBook.id);
+    if (data) {
+        // Handle both single object structure or root array element fallback gracefully
+        const rootBook = data.book ? data.book[0] : (data[0] || data);
+        const chapterIndex = daySeed % rootBook.chapter.length;
+        const targetChap = rootBook.chapter[chapterIndex];
         const verseIndex = daySeed % targetChap.verse.length;
         const targetVerse = targetChap.verse[verseIndex];
         
-        const metaBook = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === targetBook.book_name.toLowerCase());
-        const displayBookName = metaBook ? metaBook.ta : targetBook.book_name;
-        
         if (dailyText && dailyRef) {
             dailyText.textContent = targetVerse.verse;
-            dailyRef.textContent = `— ${displayBookName} ${targetChap.chapter_number}:${targetVerse.verse_number}`;
+            dailyRef.textContent = `— ${selectedMetaBook.ta} ${targetChap.chapter_number}:${targetVerse.verse_number}`;
         }
         
         if (readDailyBtn) {
             readDailyBtn.addEventListener('click', () => {
-                window.location.href = `chapter.html?book=${targetBook.book_name}&chapter=${targetChap.chapter_number}`;
+                window.location.href = `chapter.html?book=${selectedMetaBook.id}&chapter=${targetChap.chapter_number}`;
             });
         }
         
         if (shareDailyBtn) {
             shareDailyBtn.addEventListener('click', () => {
-                const shareStr = `"${targetVerse.verse}" — ${displayBookName} ${targetChap.chapter_number}:${targetVerse.verse_number}`;
+                const shareStr = `"${targetVerse.verse}" — ${selectedMetaBook.ta} ${targetChap.chapter_number}:${targetVerse.verse_number}`;
                 navigator.share ? navigator.share({ text: shareStr }) : navigator.clipboard.writeText(shareStr);
             });
         }
     }
 
-    // 2. Render History Blocks tracking elements
     const history = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY));
     const lastReadTitle = document.getElementById('lastReadTitle');
     const resumeBtn = document.getElementById('resumeReadingBtn');
@@ -138,17 +136,6 @@ async function initDashboardView() {
         lastReadTitle.textContent = `${meta ? meta.ta : history.bookId} : அதிகாரம் ${history.chapter}`;
         resumeBtn.style.display = 'inline-flex';
         resumeBtn.href = `chapter.html?book=${history.bookId}&chapter=${history.chapter}`;
-    }
-    
-    // 3. Compute Reading Progress Metrics
-    const progressBar = document.getElementById('readingProgressBar');
-    const progressText = document.getElementById('readingProgressText');
-    if (progressBar && progressText) {
-        const totalBooks = 66;
-        const readBooksCount = history ? 1 : 0; // Simple analytical estimation mockup
-        const percentage = Math.round((readBooksCount / totalBooks) * 100);
-        progressBar.style.width = `${percentage}%`;
-        progressText.textContent = history ? `சுமார் ${percentage}% வாசிக்கப்பட்டுள்ளது` : 'இன்னும் தொடங்கப்படவில்லை';
     }
 }
 
@@ -163,16 +150,11 @@ function initReaderListView() {
     const otSection = document.getElementById('otSection');
     const ntSection = document.getElementById('ntSection');
 
-    // Split segmentation navigation listener triggers
     const handleTabSwitch = (activeTab, inactiveTab, showSection, hideSection) => {
         activeTab.classList.add('active');
-        activeTab.setAttribute('aria-selected', 'true');
         inactiveTab.classList.remove('active');
-        inactiveTab.setAttribute('aria-selected', 'false');
         showSection.classList.remove('hidden-section');
-        showSection.classList.add('active-section');
         hideSection.classList.add('hidden-section');
-        hideSection.classList.remove('active-section');
     };
 
     if (tabOT && tabNT) {
@@ -180,7 +162,6 @@ function initReaderListView() {
         tabNT.addEventListener('click', () => handleTabSwitch(tabNT, tabOT, ntSection, otSection));
     }
 
-    // Build dynamic catalog UI card layout grid architecture
     BIBLE_BOOKS_METADATA.forEach((book) => {
         const itemCard = document.createElement('div');
         itemCard.className = 'card menu-item asset-book-card animate-fade-in';
@@ -195,18 +176,8 @@ function initReaderListView() {
         if (book.testament === 'OT' && otGrid) otGrid.appendChild(itemCard);
         if (book.testament === 'NT' && ntGrid) ntGrid.appendChild(itemCard);
     });
-
-    // Handle initial routing sync params from dashboard redirects
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('testament') === 'NT' && tabNT) {
-        tabNT.click();
-    }
 }
 
-/**
- * Displays overlay bottom modal layer targeting numerical structures cleanly.
- * @param {object} book - Selected book schema instance object variables
- */
 function openChapterSelectionSheet(book) {
     const sheet = document.getElementById('chapterSheet');
     const sheetTitle = document.getElementById('sheetBookTitle');
@@ -217,13 +188,12 @@ function openChapterSelectionSheet(book) {
     if (!sheet || !grid) return;
 
     sheetTitle.textContent = book.ta;
-    grid.innerHTML = ''; // Reset grid contents completely
+    grid.innerHTML = '';
 
     for (let c = 1; c <= book.chapters; c++) {
         const cell = document.createElement('button');
         cell.className = 'chapter-cell-btn';
         cell.textContent = c;
-        cell.ariaLabel = `Chapter ${c}`;
         cell.addEventListener('click', () => {
             window.location.href = `chapter.html?book=${book.id}&chapter=${c}`;
         });
@@ -231,12 +201,8 @@ function openChapterSelectionSheet(book) {
     }
 
     sheet.classList.add('sheet-visible');
-    sheet.setAttribute('aria-hidden', 'false');
 
-    const closeSheet = () => {
-        sheet.classList.remove('sheet-visible');
-        sheet.setAttribute('aria-hidden', 'true');
-    };
+    const closeSheet = () => sheet.classList.remove('sheet-visible');
     if (closeBtn) closeBtn.addEventListener('click', closeSheet);
     if (scrim) scrim.addEventListener('click', closeSheet);
 }
@@ -259,27 +225,19 @@ async function initChapterPresentationView() {
 
     if (backBtn) backBtn.addEventListener('click', () => window.location.href = 'reader.html');
 
-    // Persistent LocalSettings configuration overlay actions binding hooks
     initChapterConfigOverlays();
 
-    const data = await fetchCompleteBibleJSON();
+    const data = await fetchSingleBookJSON(bookId);
     if (!data) return;
 
-    // Fixed for lowercase "book" and "book_name" schema
-    const bookIndex = data.book.findIndex(b => b.book_name.toLowerCase() === bookId.toLowerCase());
-    if (bookIndex === -1) {
-        console.error('Target identifier mismatch context handling error logic failure.');
-        return;
-    }
-
-    const matchedBookPayload = data.book[bookIndex];
-    const targetChapterPayload = matchedBookPayload.chapter.find(c => c.chapter_number === chapterNum);
+    const rootBook = data.book ? data.book[0] : (data[0] || data);
+    const targetChapterPayload = rootBook.chapter.find(c => c.chapter_number === chapterNum);
     
     if (!targetChapterPayload) return;
 
     const metaBook = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === bookId.toLowerCase());
     if (headerTitle) headerTitle.textContent = `${metaBook ? metaBook.ta : bookId} ${chapterNum}`;
-    if (headerEnglish) headerEnglish.textContent = `${bookId} Chapter ${chapterNum}`;
+    if (headerEnglish) headerEnglish.textContent = `${metaBook ? metaBook.id : bookId} Chapter ${chapterNum}`;
 
     if (loader) loader.style.display = 'none';
     if (renderGrid) {
@@ -291,23 +249,16 @@ async function initChapterPresentationView() {
             rowNode.setAttribute('data-verse-number', v.verse_number);
             rowNode.innerHTML = `<span class="verse-num">${v.verse_number}</span><span class="verse-text-body">${v.verse}</span>`;
             
-            // Add interaction selection contextual tracking modules
             rowNode.addEventListener('click', () => handleVerseSelectionToggle(rowNode, metaBook, chapterNum, { Verse: v.verse, VerseNumber: v.verse_number }));
             renderGrid.appendChild(rowNode);
         });
     }
 
-    // Capture reading tracking state configuration data
-    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify({ bookId, chapter: chapterNum, timestamp: Date.now() }));
-    
-    // Restore spatial tracking scroll coordinates offsets indexes
-    restoreScrollMemoryCoordinates(bookId, chapterNum);
-    setupPaginationFlowControls(bookIndex, chapterNum, data);
+    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify({ bookId: metaBook.id, chapter: chapterNum, timestamp: Date.now() }));
+    restoreScrollMemoryCoordinates(metaBook.id, chapterNum);
+    setupPaginationFlowControls(metaBook.id, chapterNum);
 }
 
-/**
- * Handle individual verse click logic for selection, copying, sharing, and favoriting.
- */
 function handleVerseSelectionToggle(rowNode, metaBook, chapterNum, verseObj) {
     const toast = document.getElementById('verseActionToast');
     const toastRef = document.getElementById('toastSelectionRef');
@@ -325,7 +276,6 @@ function handleVerseSelectionToggle(rowNode, metaBook, chapterNum, verseObj) {
     if (selectedVersesSet.size > 0 && toast && toastRef) {
         toastRef.textContent = `${selectedVersesSet.size} வசனம் தேர்ந்தெடுக்கப்பட்டது`;
         toast.classList.add('toast-visible');
-        toast.setAttribute('aria-hidden', 'false');
         
         let favoritesList = JSON.parse(localStorage.getItem(STORAGE_KEYS.FAVORITES)) || [];
         const singleSelection = Array.from(selectedVersesSet)[0];
@@ -340,10 +290,7 @@ function handleVerseSelectionToggle(rowNode, metaBook, chapterNum, verseObj) {
 
 function resetSelectionToastState() {
     const toast = document.getElementById('verseActionToast');
-    if (toast) {
-        toast.classList.remove('toast-visible');
-        toast.setAttribute('aria-hidden', 'true');
-    }
+    if (toast) toast.classList.remove('toast-visible');
     document.querySelectorAll('.verse-item.selected').forEach(el => el.classList.remove('selected'));
     selectedVersesSet.clear();
 }
@@ -367,7 +314,6 @@ function configureToastActionBindings(selectedArray) {
 
     document.getElementById('toastFavBtn').onclick = () => {
         let currentFavs = JSON.parse(localStorage.getItem(STORAGE_KEYS.FAVORITES)) || [];
-        
         selectedArray.forEach(v => {
             const existsIndex = currentFavs.findIndex(f => f.key === v.key);
             if (existsIndex === -1) {
@@ -376,10 +322,41 @@ function configureToastActionBindings(selectedArray) {
                 currentFavs.splice(existsIndex, 1);
             }
         });
-        
         localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(currentFavs));
         resetSelectionToastState();
     };
+}
+
+function setupPaginationFlowControls(currentBookId, currentChapter) {
+    const prevBtn = document.getElementById('prevChapterBtn');
+    const nextBtn = document.getElementById('nextChapterBtn');
+    const navBar = document.getElementById('paginationNav');
+    
+    if (!navBar || !prevBtn || !nextBtn) return;
+    navBar.style.display = 'flex';
+
+    const currentBookIndex = BIBLE_BOOKS_METADATA.findIndex(b => b.id.toLowerCase() === currentBookId.toLowerCase());
+    const currentBookMeta = BIBLE_BOOKS_METADATA[currentBookIndex];
+
+    // Previous Button
+    if (currentChapter > 1) {
+        prevBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookMeta.id}&chapter=${currentChapter - 1}`;
+    } else if (currentBookIndex > 0) {
+        const prevBookMeta = BIBLE_BOOKS_METADATA[currentBookIndex - 1];
+        prevBtn.onclick = () => window.location.href = `chapter.html?book=${prevBookMeta.id}&chapter=${prevBookMeta.chapters}`;
+    } else {
+        prevBtn.disabled = true;
+    }
+
+    // Next Button
+    if (currentChapter < currentBookMeta.chapters) {
+        nextBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookMeta.id}&chapter=${currentChapter + 1}`;
+    } else if (currentBookIndex < BIBLE_BOOKS_METADATA.length - 1) {
+        const nextBookMeta = BIBLE_BOOKS_METADATA[currentBookIndex + 1];
+        nextBtn.onclick = () => window.location.href = `chapter.html?book=${nextBookMeta.id}&chapter=1`;
+    } else {
+        nextBtn.disabled = true;
+    }
 }
 
 function initChapterConfigOverlays() {
@@ -392,10 +369,7 @@ function initChapterConfigOverlays() {
     const modePara = document.getElementById('modeParaBtn');
 
     if (settingsBtn && panel) {
-        settingsBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            panel.classList.toggle('panel-visible');
-        });
+        settingsBtn.addEventListener('click', (e) => { e.stopPropagation(); panel.classList.toggle('panel-visible'); });
         document.addEventListener('click', () => panel.classList.remove('panel-visible'));
         panel.addEventListener('click', (e) => e.stopPropagation());
     }
@@ -413,67 +387,22 @@ function initChapterConfigOverlays() {
         modeVerse.onclick = () => { modeVerse.classList.add('active'); modePara.classList.remove('active'); setReadingModePreference('verse'); };
         modePara.onclick = () => { modePara.classList.add('active'); modeVerse.classList.remove('active'); setReadingModePreference('para'); };
     }
-
-    const container = document.getElementById('versesContainer');
-    if (container) {
-        container.addEventListener('scroll', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const key = `scroll_${urlParams.get('book') || 'Genesis'}_${urlParams.get('chapter') || 1}`;
-            localStorage.setItem(key, container.scrollTop);
-        });
-    }
 }
 
 function restoreScrollMemoryCoordinates(bookId, chapterNum) {
     setTimeout(() => {
         const container = document.getElementById('versesContainer');
         const savedOffset = localStorage.getItem(`scroll_${bookId}_${chapterNum}`);
-        if (container && savedOffset) {
-            container.scrollTop = parseInt(savedOffset, 10);
-        }
+        if (container && savedOffset) container.scrollTop = parseInt(savedOffset, 10);
     }, 150);
 }
 
-function setupPaginationFlowControls(currentBookIndex, currentChapter, fullPayload) {
-    const prevBtn = document.getElementById('prevChapterBtn');
-    const nextBtn = document.getElementById('nextChapterBtn');
-    const navBar = document.getElementById('paginationNav');
-    
-    if (!navBar || !prevBtn || !nextBtn) return;
-    navBar.style.display = 'flex';
-
-    const currentBookObj = fullPayload.book[currentBookIndex];
-    const totalChaptersInBook = currentBookObj.chapter.length;
-
-    // Previous Chapter Routing (Optimized for lowercase schemas)
-    if (currentChapter > 1) {
-        prevBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookObj.book_name}&chapter=${currentChapter - 1}`;
-    } else if (currentBookIndex > 0) {
-        const prevBookObj = fullPayload.book[currentBookIndex - 1];
-        const lastChapOfPrevBook = prevBookObj.chapter.length;
-        prevBtn.onclick = () => window.location.href = `chapter.html?book=${prevBookObj.book_name}&chapter=${lastChapOfPrevBook}`;
-    } else {
-        prevBtn.disabled = true;
-    }
-
-    // Next Chapter Routing (Optimized for lowercase schemas)
-    if (currentChapter < totalChaptersInBook) {
-        nextBtn.onclick = () => window.location.href = `chapter.html?book=${currentBookObj.book_name}&chapter=${currentChapter + 1}`;
-    } else if (currentBookIndex < fullPayload.book.length - 1) {
-        const nextBookObj = fullPayload.book[currentBookIndex + 1];
-        nextBtn.onclick = () => window.location.href = `chapter.html?book=${nextBookObj.book_name}&chapter=1`;
-    } else {
-        nextBtn.disabled = true;
-    }
-}
-
 /* ==========================================================================
-   04. OFFLINE FULL BIBLE SEARCH ENGINE INTERACTION (search.html)
+   04. OFFLINE MULTI-FILE SEARCH ENGINE (On-Demand File Aggregator)
    ========================================================================== */
 async function initSearchEngineView() {
     const searchInput = document.getElementById('bibleSearchInput');
     const bookSelect = document.getElementById('filterBookSelect');
-    const chapSelect = document.getElementById('filterChapterSelect');
     const resultsList = document.getElementById('searchResultsList');
     const summaryBar = document.getElementById('searchSummaryBar');
     const countText = document.getElementById('searchCountResultText');
@@ -488,31 +417,7 @@ async function initSearchEngineView() {
         if (bookSelect) bookSelect.appendChild(opt);
     });
 
-    if (bookSelect && chapSelect) {
-        bookSelect.addEventListener('change', () => {
-            const selectedVal = bookSelect.value;
-            chapSelect.innerHTML = '<option value="ALL">அனைத்தும் (All)</option>';
-            if (selectedVal === 'ALL') {
-                chapSelect.disabled = true;
-            } else {
-                chapSelect.disabled = false;
-                const match = BIBLE_BOOKS_METADATA.find(b => b.id === selectedVal);
-                for (let i = 1; i <= match.chapters; i++) {
-                    const o = document.createElement('option');
-                    o.value = i;
-                    o.textContent = `அதிகாரம் ${i}`;
-                    chapSelect.appendChild(o);
-                }
-            }
-            triggerSearchPipeline();
-        });
-        chapSelect.addEventListener('change', triggerSearchPipeline);
-    }
-
-    const data = await fetchCompleteBibleJSON();
-    if (!data) return;
-
-    const executeSearchFiltering = () => {
+    const executeSearchFiltering = async () => {
         const query = searchInput.value.trim().toLowerCase();
         if (!query) {
             resultsList.innerHTML = '';
@@ -528,169 +433,20 @@ async function initSearchEngineView() {
         resultsList.innerHTML = '';
 
         const targetBookFilter = bookSelect.value;
-        const targetChapFilter = chapSelect.value;
+        let booksToSearch = targetBookFilter === 'ALL' 
+            ? BIBLE_BOOKS_METADATA.map(b => b.id) 
+            : [targetBookFilter];
+
         let matchedMatchesAccumulator = [];
 
-        // Fixed lowercase schema parsing for Global Lookups
-        data.book.forEach((bPayload) => {
-            if (targetBookFilter !== 'ALL' && bPayload.book_name.toLowerCase() !== targetBookFilter.toLowerCase()) return;
+        // Sequentially scan through targeted discrete JSON files
+        for (const bId of booksToSearch) {
+            const data = await fetchSingleBookJSON(bId);
+            if (!data) continue;
             
-            bPayload.chapter.forEach((cPayload) => {
-                if (targetChapFilter !== 'ALL' && cPayload.chapter_number.toString() !== targetChapFilter) return;
-                
+            const rootBook = data.book ? data.book[0] : (data[0] || data);
+            
+            rootBook.chapter.forEach((cPayload) => {
                 cPayload.verse.forEach((vPayload) => {
                     if (vPayload.verse.toLowerCase().includes(query)) {
-                        matchedMatchesAccumulator.push({
-                            bookId: bPayload.book_name,
-                            chapter: cPayload.chapter_number,
-                            verse: vPayload.verse_number,
-                            text: vPayload.verse
-                        });
-                    }
-                });
-            });
-        });
-
-        loader.style.display = 'none';
-        summaryBar.style.display = 'block';
-        countText.textContent = `${matchedMatchesAccumulator.length} தேடல் முடிவுகள் கண்டறியப்பட்டுள்ளன.`;
-
-        matchedMatchesAccumulator.forEach(m => {
-            const row = document.createElement('div');
-            row.className = 'card search-result-item animate-fade-in';
-            const metaMeta = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === m.bookId.toLowerCase());
-            
-            const regex = new RegExp(`(${query})`, 'gi');
-            const highlightedText = m.text.replace(regex, `<span class="highlight">$1</span>`);
-
-            row.innerHTML = `
-                <div class="result-header-meta">
-                    <span class="verse-reference text-primary font-weight-bold">${metaMeta ? metaMeta.ta : m.bookId} ${m.chapter}:${m.verse}</span>
-                </div>
-                <p class="tamil-text search-body-text">${highlightedText}</p>
-            `;
-            row.addEventListener('click', () => {
-                window.location.href = `chapter.html?book=${m.bookId}&chapter=${m.chapter}`;
-            });
-            resultsList.appendChild(row);
-        });
-    };
-
-    let debounceTimer;
-    function triggerSearchPipeline() {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(executeSearchFiltering, 300);
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', triggerSearchPipeline);
-        clearBtn.onclick = () => { searchInput.value = ''; triggerSearchPipeline(); };
-    }
-}
-
-/* ==========================================================================
-   05. FAVORITES SYSTEM MANAGEMENT CONTROL (favorites.html)
-   ========================================================================== */
-function initFavoritesListView() {
-    const listNode = document.getElementById('favoritesList');
-    const emptyView = document.getElementById('favoritesEmptyView');
-    const clearAllBtn = document.getElementById('clearAllFavsBtn');
-
-    const renderFavoritesPipeline = () => {
-        const currentFavs = JSON.parse(localStorage.getItem(STORAGE_KEYS.FAVORITES)) || [];
-        if (currentFavs.length === 0) {
-            if (listNode) listNode.innerHTML = '';
-            if (emptyView) emptyView.style.display = 'flex';
-            if (clearAllBtn) clearAllBtn.style.display = 'none';
-            return;
-        }
-
-        if (emptyView) emptyView.style.display = 'none';
-        if (clearAllBtn) clearAllBtn.style.display = 'block';
-        if (listNode) {
-            listNode.innerHTML = '';
-            currentFavs.forEach(f => {
-                const card = document.createElement('div');
-                card.className = 'card favorite-row-node animate-fade-in';
-                card.innerHTML = `
-                    <div class="card-header justify-space-between">
-                        <span class="verse-reference text-secondary font-weight-bold">${f.reference}</span>
-                        <button class="icon-button mini-delete-btn" aria-label="Remove Favorite">
-                            <span class="material-symbols-outlined text-error">delete</span>
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <p class="tamil-text field-body-preview">${f.text}</p>
-                    </div>
-                `;
-                
-                card.addEventListener('click', (e) => {
-                    const token = f.key.split('_');
-                    window.location.href = `chapter.html?book=${token[0]}&chapter=${token[1]}`;
-                });
-
-                card.querySelector('.mini-delete-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    let list = JSON.parse(localStorage.getItem(STORAGE_KEYS.FAVORITES)) || [];
-                    list = list.filter(item => item.key !== f.key);
-                    localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(list));
-                    renderFavoritesPipeline();
-                });
-
-                listNode.appendChild(card);
-            });
-        }
-    };
-
-    if (clearAllBtn) {
-        clearAllBtn.onclick = () => {
-            if (confirm('சேமிக்கப்பட்ட அனைத்து வசனங்களையும் நீக்கலாமா?')) {
-                localStorage.removeItem(STORAGE_KEYS.FAVORITES);
-                renderFavoritesPipeline();
-            }
-        };
-    }
-
-    renderFavoritesPipeline();
-}
-
-/* ==========================================================================
-   06. CONFIGURATION MANAGER DASHBOARD HANDLERS (settings.html)
-   ========================================================================== */
-function initSettingsControlView() {
-    const themeSwitch = document.getElementById('settingsThemeSwitch');
-    const decFont = document.getElementById('settingsDecFontBtn');
-    const incFont = document.getElementById('settingsIncFontBtn');
-    const fontVal = document.getElementById('settingsFontSizeVal');
-    const modeVerse = document.getElementById('settingsModeVerseBtn');
-    const modePara = document.getElementById('settingsModeParaBtn');
-    const resetBtn = document.getElementById('resetApplicationDataBtn');
-
-    if (themeSwitch) {
-        themeSwitch.addEventListener('change', () => toggleThemePreference());
-    }
-
-    if (decFont && incFont && fontVal) {
-        fontVal.textContent = `${getSavedFontSize()}px`;
-        decFont.onclick = () => { adjustFontSizePreference(false); fontVal.textContent = `${getSavedFontSize()}px`; };
-        incFont.onclick = () => { adjustFontSizePreference(true); fontVal.textContent = `${getSavedFontSize()}px`; };
-    }
-
-    if (modeVerse && modePara) {
-        const m = localStorage.getItem('bible_pwa_reading_mode') || 'verse';
-        if (m === 'para') { modePara.classList.add('active'); modeVerse.classList.remove('active'); }
         
-        modeVerse.onclick = () => { modeVerse.classList.add('active'); modePara.classList.remove('active'); setReadingModePreference('verse'); };
-        modePara.onclick = () => { modePara.classList.add('active'); modeVerse.classList.remove('active'); setReadingModePreference('para'); };
-    }
-
-    if (resetBtn) {
-        resetBtn.onclick = () => {
-            if (confirm('பயன்பாட்டின் அனைத்து உள்ளூர் சேமிப்புத் தரவுகளையும் நீக்கப் போகிறீர்களா? இந்த செயல்முறையை மாற்றியமைக்க முடியாது.')) {
-                localStorage.clear();
-                alert('தரவுகள் வெற்றிகரமாக அழிக்கப்பட்டன. செயலி மீண்டும் துவக்கப்படும்.');
-                window.location.href = 'index.html';
-            }
-        };
-    }
-}
