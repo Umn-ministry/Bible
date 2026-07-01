@@ -8,10 +8,10 @@ let currentBookCacheData = null;
 
 // Dynamic Path Builder Selector for individual files
 function getBookFilePath(bookId) {
-    // Ensuring exact filename casing matching (e.g., 'books/bible.json/Genesis.json')
+    // 'books/bible.json/Genesis.json' என்பதில் இருந்து 'books/Genesis.json' ஆக மாற்றப்பட்டுள்ளது
     const matchedMeta = BIBLE_BOOKS_METADATA.find(b => b.id.toLowerCase() === bookId.toLowerCase());
     const exactFileName = matchedMeta ? matchedMeta.id : bookId;
-    return `books/bible.json/${exactFileName}.json`;
+    return `books/${exactFileName}.json`;
 }
 
 // Persistent LocalStorage keys for history tracking and indexing
