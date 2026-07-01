@@ -58,131 +58,162 @@
     </nav>
 
     <script src="books.js"></script>
+<!DOCTYPE html>
+<html lang="ta" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>வேதாகமத் தேடல் (Bible Search) - தமிழ் பைபிள்</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
+    <!-- Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top App Bar containing Search Field -->
+    <header class="top-app-bar search-app-bar">
+        <button class="icon-button" id="menuBtn" aria-label="Menu">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="search-field-container">
+            <span class="material-symbols-outlined search-leading-icon">search</span>
+            <input type="search" id="bibleSearchInput" placeholder="வார்த்தைகள், புத்தகம் அல்லது வசனத்தைத் தேடுக..." autocomplete="off" autofocus>
+            <button class="icon-button" id="clearSearchBtn" aria-label="Clear Search" style="display: none;">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <button class="icon-button" id="themeToggleBtn" aria-label="Toggle Theme">
+            <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+        </button>
+    </header>
+
+    <!-- Navigation Drawer -->
+    <aside class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <h2>பரிசுத்த வேதாகமம்</h2>
+            <p>Tamil Bible PWA</p>
+        </div>
+        <nav class="drawer-nav">
+            <a href="index.html" class="nav-link">
+                <span class="material-symbols-outlined">home</span>
+                <span>முகப்பு (Home)</span>
+            </a>
+            <a href="reader.html" class="nav-link">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span>வாசிக்க (Read)</span>
+            </a>
+            <a href="search.html" class="nav-link active">
+                <span class="material-symbols-outlined">search</span>
+                <span>தேடல் (Search)</span>
+            </a>
+            <a href="favorites.html" class="nav-link">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span>பிடித்தவை (Favorites)</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="material-symbols-outlined">settings</span>
+                <span>அமைப்புகள் (Settings)</span>
+            </a>
+            <a href="about.html" class="nav-link">
+                <span class="material-symbols-outlined">info</span>
+                <span>பற்றி (About)</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <!-- Main Filtering Container Area -->
+    <main class="main-container Search-Structural-Root">
+        
+        <!-- Interactive Context Filters Expansion Bar -->
+        <section class="search-filters-card card">
+            <div class="filter-row">
+                <div class="filter-item">
+                    <label for="filterBookSelect" class="input-hint-label">புத்தகம் (Book)</label>
+                    <div class="select-wrapper">
+                        <select id="filterBookSelect">
+                            <option value="ALL">முழு வேதாகமம் (All Books)</option>
+                            <!-- Programmatically built options from books.js -->
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label for="filterChapterSelect" class="input-hint-label">அதிகாரம் (Chapter)</label>
+                    <div class="select-wrapper">
+                        <select id="filterChapterSelect" disabled>
+                            <option value="ALL">அனைத்தும் (All)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Status Metadata Display -->
+        <div class="search-meta-summary-strip" id="searchSummaryBar" style="display: none;">
+            <span class="meta-text" id="searchCountResultText">0 தேடல் முடிவுகள் கிடைத்துள்ளன.</span>
+        </div>
+
+        <!-- Render Target Panel for Query Results -->
+        <section class="search-results-viewport" id="searchResultsContainer">
+            
+            <!-- Default Placeholder Empty State Layout -->
+            <div class="empty-state-view" id="searchEmptyView">
+                <span class="material-symbols-outlined empty-icon">manage_search</span>
+                <h3 class="tamil-text">தேடலைத் துவங்குங்கள்</h3>
+                <p>தமிழ் வார்த்தைகள், சொற்றொடர்கள் அல்லது அதிகார எண்களைக் கொண்டு துல்லியமாகத் தேடலாம்.</p>
+            </div>
+
+            <!-- Loader Layout -->
+            <div class="loading-state-view" id="searchLoader" style="display: none;">
+                <div class="circular-progress-indicator"></div>
+                <p class="tamil-text">வேதாகமப் பக்கங்கள் அலசப்படுகிறது...</p>
+            </div>
+
+            <!-- List Target Node -->
+            <div class="search-results-list" id="searchResultsList"></div>
+            
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (Mobile Form Factor Sync) -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">home</span>
+            <span class="bottom-nav-label">முகப்பு</span>
+        </a>
+        <a href="reader.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">auto_stories</span>
+            <span class="bottom-nav-label">வாசிக்க</span>
+        </a>
+        <a href="search.html" class="bottom-nav-link active">
+            <span class="material-symbols-outlined">search</span>
+            <span class="bottom-nav-label">தேடல்</span>
+        </a>
+        <a href="favorites.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">bookmark</span>
+            <span class="bottom-nav-label">பிடித்தவை</span>
+        </a>
+        <a href="settings.html" class="bottom-nav-link">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="bottom-nav-label">அமைப்புகள்</span>
+        </a>
+    </nav>
+
+    <!-- Script assets parsed sequentially -->
+    <script src="books.js"></script>
     <script src="settings.js"></script>
-    <script>
-        let searchTimeoutStore = null;
-        // Optimization: Prefetch target array matrix maps mapping structures pointers directly
-        const searchScopeConfigurationMap = bibleBooksData;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            
-            const input = document.getElementById('globalSearchInput');
-            const clearBtn = document.getElementById('clearQueryBtn');
-            
-            input.addEventListener('input', () => {
-                if(input.value.trim().length > 0) {
-                    clearBtn.style.display = 'inline-flex';
-                } else {
-                    clearBtn.style.display = 'none';
-                }
-                
-                // Debouncing Optimization Mechanism Engine Layout Configurations Controls
-                clearTimeout(searchTimeoutStore);
-                searchTimeoutStore = setTimeout(() => {
-                    executeGlobalSearchPipeline(input.value.trim());
-                }, 400);
-            });
-
-            clearBtn.addEventListener('click', () => {
-                input.value = '';
-                clearBtn.style.display = 'none';
-                document.getElementById('searchMetaSummary').innerText = '';
-                resetSearchPlaceholderMessage();
-                input.focus();
-            });
-        });
-
-        function resetSearchPlaceholderMessage() {
-            document.getElementById('searchResultsContainer').innerHTML = `
-                <div class="card" style="text-align: center; padding: 32px 16px;">
-                    <span class="material-icons-round" style="font-size: 48px; color: var(--on-surface-muted); margin-bottom: 8px;">manage_search</span>
-                    <p class="empty-text">ஆரம்பிக்க வார்த்தைகளை தட்டச்சு செய்யவும். அனைத்து 66 புத்தகங்களிலும் தேடப்படும்.</p>
-                </div>`;
-        }
-
-        async function executeGlobalSearchPipeline(query) {
-            const container = document.getElementById('searchResultsContainer');
-            const summary = document.getElementById('searchMetaSummary');
-            
-            if(!query || query.length < 2) {
-                if(query.length === 1) {
-                    summary.innerText = 'குறைந்தது 2 எழுத்துக்கள் தேவை...';
-                } else {
-                    summary.innerText = '';
-                    resetSearchPlaceholderMessage();
-                }
-                return;
-            }
-
-            container.innerHTML = `
-                <div style="text-align:center; padding: 24px;">
-                    <p class="empty-text">தேடப்படுகிறது... தயவுசெய்து காத்திருக்கவும்...</p>
-                </div>`;
-            summary.innerText = '';
-
-            let matchesCount = 0;
-            const resultsBufferFragment = document.createDocumentFragment();
-            const regexMatcher = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-
-            // Sequential High-Speed Multi-file Processing Iterations Engine Loop Track
-            for(const book of searchScopeConfigurationMap) {
-                try {
-                    const response = await fetch(`books/${book.id}.json`);
-                    if(!response.ok) continue;
-                    const data = await response.json();
-                    
-                    // Direct Traversal Path Implementation Framework Schema Compliance Engine rule
-                    const chapters = data.Book[0].Chapter;
-                    
-                    chapters.forEach((chapObj, cIdx) => {
-                        const chapNum = cIdx + 1;
-                        const verses = chapObj.Verse;
-                        
-                        verses.forEach((vObj) => {
-                            if(vObj.Verse.includes(query)) {
-                                matchesCount++;
-                                
-                                const card = document.createElement('div');
-                                card.className = 'search-result-item';
-                                card.onclick = () => {
-                                    location.href = `chapter.html?book=${encodeURIComponent(book.id)}&chapter=${chapNum}#v-${vObj.Verseid || vObj.Verseid === 0 ? parseInt(vObj.Verseid.toString().slice(-3)) : 1}`;
-                                };
-
-                                // Apply highlighted mark markup injection wrappers safely syntax engine
-                                const structuralMarkedContentString = vObj.Verse.replace(regexMatcher, '<mark>$1</mark>');
-                                const calculatedDisplayVerseNumber = vObj.Verseid ? parseInt(vObj.Verseid.toString().slice(-3)) : '';
-
-                                card.innerHTML = `
-                                    <div class="search-result-ref">${book.ta} ${chapNum}:${calculatedDisplayVerseNumber}</div>
-                                    <div style="font-size:0.95rem; line-height:1.5;">${structuralMarkedContentString}</div>
-                                `;
-                                resultsBufferFragment.appendChild(card);
-                            }
-                        });
-                    });
-                } catch(e) {
-                    // Fail silently over missing individual books configurations tables map files components safely
-                }
-            }
-
-            container.innerHTML = '';
-            if(matchesCount > 0) {
-                summary.innerText = `மொத்தம் ${matchesCount} முடிவுகள் கண்டறியப்பட்டன.`;
-                container.appendChild(resultsBufferFragment);
-            } else {
-                summary.innerText = 'முடிவுகள் எதுவும் இல்லை.';
-                container.innerHTML = `
-                    <div class="card" style="text-align: center; padding: 32px 16px;">
-                        <span class="material-icons-round" style="font-size: 48px; color: #d93025; margin-bottom: 8px;">error_outline</span>
-                        <p class="empty-text">"${query}" என்ற வார்த்தைக்கான முடிவுகள் எதுவும் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.</p>
-                    </div>`;
-            }
-        }
-
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
-</html>
+                </html>
